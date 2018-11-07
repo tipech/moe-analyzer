@@ -34,14 +34,21 @@ def main():
 
 
 
-
 class MetricAnalyzer():
     """docstring for MetricAnalyzer"""
     def __init__(self, road_model, data):
         
         self.model = road_model
-        self.data = data
+        self.data = parse_xml(data)
 
+
+
+
+    def parse_xml(self, data):
+        """"""
+        data_array = None
+
+        return data_array
 
 
 
