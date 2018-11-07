@@ -30,10 +30,6 @@ def main():
     args.print = True
 
 
-
-
-
-
 class MetricAnalyzer():
     """docstring for MetricAnalyzer"""
     def __init__(self, road_model, data):
@@ -46,6 +42,63 @@ class MetricAnalyzer():
 
     def parse_xml(self, data):
         """"""
+
+        """
+        result format: list of list of arrays
+        [[{},{}],[{},{}]]
+
+[
+    [
+        { "id":"truck0",
+            "x":"-79.279196", "y":"43.766188",
+            "angle":"72.706319",
+            "type":"truck_truck",
+            "speed":"0.720844",
+            "pos":"7.920844",
+            "lane":"35349336_2", "slope":"0.000000"},
+        { "id":"truck1",
+            "x":"-79.279196", "y":"43.766188",
+            "angle":"72.706319",
+            "type":"truck_truck",
+            "speed":"0.720844",
+            "pos":"7.920844",
+            "lane":"35349336_2", "slope":"0.000000"},
+        { "id":"truck2",
+            "x":"-79.279196", "y":"43.766188",
+            "angle":"72.706319",
+            "type":"truck_truck",
+            "speed":"0.720844",
+            "pos":"7.920844",
+            "lane":"35349336_2", "slope":"0.000000"}
+    ],
+    [],
+    [
+        { "id":"truck0",
+            "x":"-79.279196", "y":"43.766188",
+            "angle":"72.706319",
+            "type":"truck_truck",
+            "speed":"0.720844",
+            "pos":"7.920844",
+            "lane":"35349336_2", "slope":"0.000000"},
+        { "id":"truck1",
+            "x":"-79.279196", "y":"43.766188",
+            "angle":"72.706319",
+            "type":"truck_truck",
+            "speed":"0.720844",
+            "pos":"7.920844",
+            "lane":"35349336_2", "slope":"0.000000"},
+        { "id":"truck2",
+            "x":"-79.279196", "y":"43.766188",
+            "angle":"72.706319",
+            "type":"truck_truck",
+            "speed":"0.720844",
+            "pos":"7.920844",
+            "lane":"35349336_2", "slope":"0.000000"}
+    ]
+]
+
+
+        """
         data_array = None
 
         return data_array
