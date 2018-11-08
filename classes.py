@@ -86,7 +86,7 @@ class Edge():
             dpt = total_delay / throughput
 
         else: # no cars passed
-            pit = 1 
+            pit = 0 
             dpt = 0
 
         # if there were valid cars (that stayed in the same system)
