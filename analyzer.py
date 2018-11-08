@@ -1,11 +1,19 @@
-"""Traffic metrics calculation
+"""Road network performance metrics calculation
 
-This script calculates several different metrics from the HCM
+This file contains classes used for calculation of several different road
+network performance and traffic metrics from the Highway Capacity Manual.
+(summary: https://ops.fhwa.dot.gov/publications/fhwahop08054/execsum.htm)
+
+It can also be executed as a script, supplied with command line arguments.
+
+Classes:
+    MetricAnalyzer
 
 """
 
 import xml.etree.ElementTree as ET
 import argparse
+from classes import Edge, Lane, Vehicle
 from pprint import pprint
 
 
@@ -51,41 +59,33 @@ class MetricAnalyzer():
     """Class responsible for the metric calculation"""
     def __init__(self, model, data):
 
-        self.read_model(model)
-        self.construct_systems()
-        self.read_data(data)
+        try:
+            self.read_model(model)
+            self.construct_systems()
+            self.read_data(data)
 
+        # I/O error checking
+        except ET.ParseError as e:
+            print("Problem while parsing xml file: ", e)
+            exit()
 
 
     def read_model(self, file):
         """Parse a road network model from xml format to dictionary."""
-        
-        try:
 
-            # xml file reading
-            tree = ET.parse(file)
-            root = tree.getroot()
+        # xml file reading
+        tree = ET.parse(file)
+        root = tree.getroot()
 
-            # model dictionary initialization
-            self.model = {}
+        # model dictionary initialization
+        self.model = {}
 
-            # populate edges in road model
-            # store edge properties, lanes and initialize metrics
-            for edge in root.findall('edge'):
-                self.model[edge.attrib['id']] = {
-                    'properties': edge.attrib,
-                    'lanes': [lane.attrib['id']:lane.attrib
-                        for lane in edge.findall('lane')]
-                    'vehicles': {
-                        'inside': 0,
-                        'visited': 0
-                        }
-                    }
+        # populate edges in road model
+        for edge_xml in root.findall('edge'):
 
-        # I/O error checking
-        except ET.ParseError as e:
-            print("There was a problem while parsing file: " + file, e)
-            exit()
+            # create edge object and store it keyed by id
+            edge = Edge(edge_xml)
+            self.model[edge.id] = edge
 
 
     def construct_systems(self):
@@ -99,72 +99,73 @@ class MetricAnalyzer():
     def read_data(self, file):
         """Parse traffic measurement data in Floating Car Data format."""
 
-        try:
+        # xml file reading
+        tree = ET.parse(file)
+        root = tree.getroot()
 
-            # xml file reading
-            tree = ET.parse(file)
-            root = tree.getroot()
+        self.vehicles = {}        # vehicle registry
+        self.last_timestep = None # will remember previous time
 
-            # vehicle dictionary initialization
-            self.vehicles = {}
-
-            # iterate through timestops
-            for time in root.findall('timestep'):
-                
-                # iterate through vehicle measurements
-                for veh in time.findall('vehicle'):
-
-                    veh_id = veh.attrib['id']
+        # iterate through timestops
+        for time_xml in root.findall('timestep'):
             
-                    # if first time seeing vehicle, add to dictionary
-                    if veh_id not in self.vehicles:
-                        self.vehicles[veh_id] = {
-                            'id': veh_id,
-                            'properties': {'type': veh.attrib['type'] }
-                        }
+            # iterate and read through vehicle measurements
+            for vehicle_xml in time_xml.findall('vehicle'):
+                self.read_vehicle_entry(vehicle_xml)
 
-                    # if it's inside our model
-                    if self.get_edge(veh.attrib['lane']) in self.model:
-
-                        # if this vehicle was in the edge last time
-                        if ('state' not in self.vehicles[veh_id] or 
-                            self.vehicles[veh_id]['edge'] == ):
+            self.compute_metrics(time_xml.attrib['time'])
 
 
+    def read_vehicle_entry(self, vehicle_xml):
+        """Read a single vehicle measurement entry and act accordingly"""
+
+        # get vehicle id
+        vehicle_id = vehicle_xml.attrib['id']
+
+        # check if vehicle existed, if so update position
+        if vehicle_id in self.vehicles:
+            vehicle = self.vehicles[vehicle_id]
+            vehicle.update(vehicle_xml)
+
+            # existing vehicle changed edges within network
+            if vehicle.changed and vehicle.edge in self.model:
+
+                # update counters for new edge
+                self.model[vehicle.edge].update_entered()
+
+                # update counters for old edge
+                self.model[vehicle.last_edge].update_left()
+
+            # existing vehicle left network
+            elif vehicle.changed and vehicle.edge in self.model:
+
+                # update counters for old edge
+                self.model[vehicle.last_edge].update_left()
+
+        # this is a new vehicle, create object
+        else:
+            vehicle = Vehicle(vehicle_xml)
+
+            # vehicle actually entered network, add to registry
+            if vehicle.edge in self.model:
+                self.vehicles[vehicle.id] = vehicle
+
+                # update counters for new edge
+                self.model[vehicle.edge].update_entered()
 
 
+    def compute_metrics(self, timestep):
+        """Compute and update metric values for one timestep."""
 
-        # I/O error checking
-        except ET.ParseError as e:
-            print("There was a problem while parsing file: " + file, e)
-            exit()
+        # if it's not the very fist timestep, get time difference
+        if self.last_timestep != None:
+            dT = timestep - self.last_timestep
 
-
-    def get_state_dict(self, vehicle):
-        """Get the state of a single vehicle as a dictionary."""
-        
-        return {
-            'edge': self.get_edge(vehicle['lane']),
-            'lane': self.get_lane(vehicle['lane']),
-            'pos': vehicle['pos'],
-            'x': vehicle['x'],
-            'y': vehicle['y'],
-            'speed': vehicle['speed']
-            }
+            
 
 
-    def get_edge(self, lane_id):
-        """Get the id of the edge a lane belongs to."""
-        
-        return lane_id.rpartition('_')[0]
-
-
-    def get_lane(self, lane_id):
-        """Get the actual number of a lane."""
-        
-        return lane_id.rpartition('_')[2]
-
-
+        # remember previous time
+        self.last_timestep = timestep
 
 
 
