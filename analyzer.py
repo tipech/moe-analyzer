@@ -137,10 +137,17 @@ class MetricAnalyzer():
                 self.model[vehicle.last_edge].update_left()
 
             # existing vehicle left network
-            elif vehicle.changed and vehicle.edge in self.model:
+            elif vehicle.changed and vehicle.edge not in self.model:
 
                 # update counters for old edge
                 self.model[vehicle.last_edge].update_left()
+
+            # existing vehicle stayed in same edge
+            elif not vehicle.changed and vehicle.edge in self.model:
+
+                # update counters for old edge
+                self.model[vehicle.last_edge].update_moved(vehicle)
+
 
         # this is a new vehicle, create object
         else:
@@ -157,11 +164,21 @@ class MetricAnalyzer():
     def compute_metrics(self, timestep):
         """Compute and update metric values for one timestep."""
 
+        timestep = float(timestep)
+
         # if it's not the very fist timestep, get time difference
         if self.last_timestep != None:
-            dT = timestep - self.last_timestep
+            time_diff = timestep - self.last_timestep
 
-            
+            # iterate through edges and compute metrics
+            for edge in self.model.values():
+                
+                results = edge.compute_metrics(time_diff)
+
+                if results[1] != 0:
+                # if edge.id == "36921467":
+                    print("Time:",timestep," Edge:",edge.id," Metrics:",results)
+
 
 
         # remember previous time
