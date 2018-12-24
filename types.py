@@ -1,6 +1,12 @@
-"""Road network classes
+"""Road network performance analyzer types
 
-This file contains classes used by analyzer.py
+This file contains classes that correspond to object types for the road
+network performance analysis tool
+
+Classes:
+    Edge
+    Lane
+    Vehicle
 
 """
 

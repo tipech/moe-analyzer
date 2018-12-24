@@ -13,7 +13,7 @@ Classes:
 
 import xml.etree.ElementTree as ET
 import argparse
-from classes import Edge, Lane, Vehicle
+from types import Edge, Lane, Vehicle
 from pprint import pprint
 
 

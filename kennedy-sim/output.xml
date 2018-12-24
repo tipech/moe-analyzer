@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on Thu 08 Nov 2018 02:24:37 PM EST by SUMO gui Version 0.25.0
+<!-- generated on Tue 13 Nov 2018 09:56:51 AM EST by SUMO gui Version 0.25.0
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumo-gui.exeConfiguration.xsd">
 
     <input>
-        <net-file value="/home/tipech/Projects/Highway/kennedy-sim/net.net.xml"/>
-        <route-files value="/home/tipech/Projects/Highway/kennedy-sim/osm.passenger.trips.xml"/>
+        <net-file value="/home/tipech/Projects/Highway/traffic-performance/kennedy-sim/net.net.xml"/>
+        <route-files value="/home/tipech/Projects/Highway/traffic-performance/kennedy-sim/osm.passenger.trips.xml"/>
     </input>
 
     <output>
-        <fcd-output value="/home/tipech/Projects/Highway/kennedy-sim/output.xml"/>
+        <fcd-output value="/home/tipech/Projects/Highway/traffic-performance/kennedy-sim/output.xml"/>
         <fcd-output.geo value="true"/>
-        <save-state.prefix value="/home/tipech/Projects/Highway/kennedy-sim/state"/>
+        <save-state.prefix value="/home/tipech/Projects/Highway/traffic-performance/kennedy-sim/state"/>
     </output>
 
     <processing>
@@ -26,11 +26,11 @@
     </report>
 
     <emissions>
-        <phemlight-path value="/home/tipech/Projects/Highway/kennedy-sim/./PHEMlight/"/>
+        <phemlight-path value="/home/tipech/Projects/Highway/traffic-performance/kennedy-sim/./PHEMlight/"/>
     </emissions>
 
     <gui_only>
-        <gui-settings-file value="/home/tipech/Projects/Highway/kennedy-sim/osm.view.xml"/>
+        <gui-settings-file value="/home/tipech/Projects/Highway/traffic-performance/kennedy-sim/osm.view.xml"/>
     </gui_only>
 
 </configuration>
