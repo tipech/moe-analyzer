@@ -117,9 +117,9 @@ class MOEAnalyzer():
                 results = section.compute_metrics(time_diff, self.min_speed)
 
                 # DEBUG
-                if section.id == "1367240508":
-                    print("Time:",self.last_cycle," Edge:",section.id," Metrics:",results)
-
+                #if section.id == "1367240508":
+                    #print("Time:",self.last_cycle," Edge:",section.id," Metrics:",results)
+                self.model.db.insert(results, self.last_cycle, section)
 
 
     def reset_counters(self):

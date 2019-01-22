@@ -11,6 +11,7 @@ Classes:
 import xml.etree.ElementTree as ET
 import re
 from model.components import *
+from database.db_connector import MongoDBConnector
 
 from pprint import pprint
 
@@ -27,6 +28,8 @@ class RoadNetworkModel():
         self.read_model(filename)
         self.construct_sections()
 
+        #create a MongoDB collection and store the edges by id
+        self.db = MongoDBConnector(self.sections)
 
     def read_model(self, filename):
         """Parse a road network model from xml format to dictionary."""
