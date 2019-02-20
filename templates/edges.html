@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+  <div>
+    
+    <table border="1" style="display:inline-block; float: left;">
+      <thead>
+        <tr>
+          <th>Edge id</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for edge in edges %}
+            <tr>
+              <td>
+                <a href="{{ url_for('visualize_metrics', edge_id=edge['_id'], group_id=0, collection=collection) }}">
+                  {{ edge["_id"] }}
+                </a>      
+              </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <table border="1" style="display:inline-block; border:1px solid;">
+      <thead>
+        <tr>
+          <th>Group id</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for group in groups %}
+            <tr>
+              <td>
+                <a href="{{ url_for('visualize_metrics', edge_id=0, group_id=group['_id'], collection=collection) }}">
+                  {{ group["_id"] }}
+                </a>      
+              </td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</body>

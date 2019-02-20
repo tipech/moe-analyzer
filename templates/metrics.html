@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style> /* set the CSS */
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+</style>
+
+<body>
+  <div>
+    <h2>Percent Incomplete Trips</h2>
+    <div id="PITChart"></div>
+    </br></br>
+    <h2>Throughput</h2>
+    <div id="ThroughputChart"></div>
+    </br></br>
+    <h2>Total Delay</h2>
+    <div id="TotalDelayChart"></div>
+    </br></br>
+    <h2>Delay per Trip</h2>
+    <div id="DPTChart"></div>
+    </br></br>
+    <h2>Travel Time Index</h2>
+    <div id="TTIChart"></div>
+  </div>
+
+<!-- load the d3.js library -->    	
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script>
+    // set the dimensions and margins of the graph
+    var margin = {top: 20, right: 20, bottom: 50, left: 70},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    // set the ranges
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
+    // define the line
+    var valueline = d3.line()
+        .x(function(d) { return x(d.time); })
+     //   .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d.tti); });
+
+    // append the svg object to the body of the page
+    // appends a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+
+    /////////TTI Chart//////////
+    var chart1 = d3.select("#TTIChart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.json("/edge/id={{ edge_id }}/collection={{ collection }}", function(error, data) {
+      if (error) throw error;
+      this.data = data[0].entries;
+      // format the data
+      this.data.forEach(function(d) {
+          d.time = +d.time;
+          d.tti = +d.tti;
+      });
+
+      // Scale the range of the data
+      x.domain([0, d3.max(this.data, function(d) { return d.time; })]);
+      y.domain([0, d3.max(this.data, function(d) { return d.tti; })]);
+
+      // Add the valueline path.
+      chart1.append("path")
+          .data([this.data])
+          .attr("class", "line")
+          .attr("d", valueline);
+
+      // Add the X Axis
+      chart1.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+    
+      // Text label for the X Axis
+      chart1.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Time (s)");
+
+      // Add the Y Axis
+      chart1.append("g")
+          .call(d3.axisLeft(y));
+      // Text label for the Y axis
+      chart1.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("TTI");      
+        });
+
+    /////////PIT Chart//////////
+    var chart2 = d3.select("#PITChart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.json("/edge/id={{ edge_id }}/collection={{ collection }}", function(error, data) {
+      if (error) throw error;
+      this.data = data[0].entries;
+      // format the data
+      this.data.forEach(function(d) {
+          d.time = +d.time;
+          d.tti = +d.pit;
+      });
+
+      // Scale the range of the data
+      //x.domain(d3.extent(data, function(d) { return d.date; }));
+      x.domain([0, d3.max(this.data, function(d) { return d.time; })]);
+      y.domain([0, d3.max(this.data, function(d) { return d.pit; })]);
+
+      // Add the valueline path.
+      chart2.append("path")
+          .data([this.data])
+          .attr("class", "line")
+          .attr("d", valueline);
+
+      // Add the X Axis
+      chart2.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+    
+      // Text label for the X Axis
+      chart2.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Time (s)");
+
+      // Add the Y Axis
+      chart2.append("g")
+          .call(d3.axisLeft(y));
+      // Text label for the Y axis
+      chart2.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("PIT");      
+        });
+
+    /////////Throughput Chart//////////
+    var chart3 = d3.select("#ThroughputChart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.json("/edge/id={{ edge_id }}/collection={{ collection }}", function(error, data) {
+      if (error) throw error;
+      this.data = data[0].entries;
+      // format the data
+      this.data.forEach(function(d) {
+          d.time = +d.time;
+          d.tti = +d.throughput;
+      });
+
+      // Scale the range of the data
+      //x.domain(d3.extent(data, function(d) { return d.date; }));
+      x.domain([0, d3.max(this.data, function(d) { return d.time; })]);
+      y.domain([0, d3.max(this.data, function(d) { return d.throughput; })]);
+
+      // Add the valueline path.
+      chart3.append("path")
+          .data([this.data])
+          .attr("class", "line")
+          .attr("d", valueline);
+
+      // Add the X Axis
+      chart3.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+    
+      // Text label for the X Axis
+      chart3.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Time (s)");
+
+      // Add the Y Axis
+      chart3.append("g")
+          .call(d3.axisLeft(y));
+      // Text label for the Y axis
+      chart3.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Throughput");      
+        });
+
+
+        /////////Total Delay Chart//////////
+    var chart4 = d3.select("#TotalDelayChart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.json("/edge/id={{ edge_id }}/collection={{ collection }}", function(error, data) {
+      if (error) throw error;
+      this.data = data[0].entries;
+      // format the data
+      this.data.forEach(function(d) {
+          d.time = +d.time;
+          d.tti = +d.total_delay;
+      });
+
+      // Scale the range of the data
+      //x.domain(d3.extent(data, function(d) { return d.date; }));
+      x.domain([0, d3.max(this.data, function(d) { return d.time; })]);
+      y.domain([0, d3.max(this.data, function(d) { return d.total_delay; })]);
+
+      // Add the valueline path.
+      chart4.append("path")
+          .data([this.data])
+          .attr("class", "line")
+          .attr("d", valueline);
+
+      // Add the X Axis
+      chart4.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+    
+      // Text label for the X Axis
+      chart4.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Time (s)");
+
+      // Add the Y Axis
+      chart4.append("g")
+          .call(d3.axisLeft(y));
+      // Text label for the Y axis
+      chart4.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Total Delay");      
+        });
+
+
+        /////////DPT Chart//////////
+    var chart5 = d3.select("#DPTChart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Get the data
+    d3.json("/edge/id={{ edge_id }}/collection={{ collection }}", function(error, data) {
+      if (error) throw error;
+      this.data = data[0].entries;
+      // format the data
+      this.data.forEach(function(d) {
+          d.time = +d.time;
+          d.tti = +d.dpt;
+      });
+
+      // Scale the range of the data
+      //x.domain(d3.extent(data, function(d) { return d.date; }));
+      x.domain([0, d3.max(this.data, function(d) { return d.time; })]);
+      y.domain([0, d3.max(this.data, function(d) { return d.dpt; })]);
+
+      // Add the valueline path.
+      chart5.append("path")
+          .data([this.data])
+          .attr("class", "line")
+          .attr("d", valueline);
+
+      // Add the X Axis
+      chart5.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+    
+      // Text label for the X Axis
+      chart5.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .text("Time (s)");
+
+      // Add the Y Axis
+      chart5.append("g")
+          .call(d3.axisLeft(y));
+      // Text label for the Y axis
+      chart5.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x",0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("DPT Chart");      
+        });
+  </script>
+</body>
