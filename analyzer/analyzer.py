@@ -111,6 +111,8 @@ class MOEAnalyzer():
             # iterate through edges and compute metrics
             for edge in self.model.edges.values():    
                 results = edge.compute_metrics(time_diff, self.min_speed)
+                self.model.db.insert(results, self.last_cycle, edge, type="edge")
+
 
             # iterate through sections and compute metrics
             for section in self.model.sections.values():    
@@ -119,8 +121,9 @@ class MOEAnalyzer():
                 # DEBUG
                 #if section.id == "1367240508":
                     #print("Time:",self.last_cycle," Edge:",section.id," Metrics:",results)
-                self.model.db.insert(results, self.last_cycle, section)
+                self.model.db.insert(results, self.last_cycle, section, type="group")
 
+        self.model.db.static_visual(10, 1, 100)
 
     def reset_counters(self):
         """Reset edge counters, prepare for next timestamp"""

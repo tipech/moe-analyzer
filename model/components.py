@@ -60,7 +60,7 @@ class Junction():
     """Representation of a junction in a road network."""
     def __init__(self, junction):
 
-        self.id = re.sub(r':?([^_]+).*', r'\1', junction['id'])
+        self.id = junction['id']
         self.internal_edges = {lane.rpartition('_')[0]
             for lane in junction['intLanes'].split()}
 

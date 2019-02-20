@@ -18,18 +18,21 @@ from pprint import pprint
 
 class RoadNetworkModel():
     """Read an xml file and construct a representation of the road network"""
-    def __init__(self, filename):
+    def __init__(self, filename, allowed_types=None):
 
         # initialize components and parse file
         self.edges = {}
         self.junctions = {}
-
+        if not allowed_types:
+            self.allowed_types = ["highway.motorway", "highway.trunk", "highway.primary", "highway.secondary", "highway.tertiary", "highway.unclassified", "highway.residential", "highway.motorway_link", "highway.trunk_link", "highway.primary_link", "highway.secondary_link", "highway.tertiary_link", "highway.living_street", "highway.bus_guideway"]
+        else:
+            self.allowed_types = allowed_types
         # read low-level edges and construct larger systems
         self.read_model(filename)
         self.construct_sections()
-
+        pprint(self.sections)
         #create a MongoDB collection and store the edges by id
-        self.db = MongoDBConnector(self.sections)
+        self.db = MongoDBConnector(self.edges, self.sections, filename)
 
     def read_model(self, filename):
         """Parse a road network model from xml format to dictionary."""
@@ -41,9 +44,10 @@ class RoadNetworkModel():
         for edge_xml in root.findall('edge'):
 
             # create lanes, edge objects and store edge keyed by id
-            lanes = [lane_xml.attrib for lane_xml in edge_xml.findall('lane')]
-            edge = Edge(edge_xml.attrib, lanes)
-            self.edges[edge.id] = edge
+            if ((not edge_xml.attrib.get('type')) or (edge_xml.attrib.get('type') in self.allowed_types)):
+                lanes = [lane_xml.attrib for lane_xml in edge_xml.findall('lane')]
+                edge = Edge(edge_xml.attrib, lanes)
+                self.edges[edge.id] = edge
 
         # iterate over network junctions
         for junction_xml in root.findall('junction'):
