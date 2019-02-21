@@ -123,7 +123,6 @@ class MOEAnalyzer():
                     #print("Time:",self.last_cycle," Edge:",section.id," Metrics:",results)
                 self.model.db.insert(results, self.last_cycle, section, type="group")
 
-        self.model.db.static_visual(10, 1, 100)
 
     def reset_counters(self):
         """Reset edge counters, prepare for next timestamp"""
