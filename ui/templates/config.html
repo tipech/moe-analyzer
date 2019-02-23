@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+  <h1>{% block title %}System Configuration{% endblock %}</h1>
+  <hr>
+  <ul>
+    <li>
+      <label for="network">Network:</label>
+      <select id="network">
+        <option value="none"> </option>
+    
+        {% for network in networks %}
+            <option {{ 'selected="selected"' if network == current['id'] }}
+            value="{{ network }}" >{{ network }}</option>
+        {% endfor %}
+    
+      </select>
+    </li>
+    {% if current %}
+      <li class="sep"></li>
+      <li>
+        <label>Edges:</label>
+        <p id="edges">{{ current['edge_count'] }}</p>
+      </li>
+      <li>
+        <label>Junctions:</label>
+        <p id="junctions">{{ current['junction_count'] }}</p>
+      </li>
+      <!-- <li>
+        <label>Paths:</label>
+        <p id="paths">{{ current['path_count'] }}</p>
+      </li> -->
+      <li>
+        <label>Length:</label>
+        <p id="length">{{ current['total_length'] }} km</p>
+      </li><!-- 
+      <li class="sep"></li>
+      <li>
+        <label>Split to groups:</label>
+        <input type="checkbox" name="split"/>
+      </li> -->
+      <li class="sep"></li>
+      <li class="sep"></li>
+      <li>
+        <label for="simulation">Simulation:</label>
+        <select id="simulation">
+          <option value="none"> </option>
+
+          {% for simulation in simulations %}
+              <option value="{{ simulation }}" >{{ simulation }}</option>
+          {% endfor %}
+        </select>
+      </li>
+      <li class="sep"></li>
+      <li>
+        <label for="window">Obsrv. window:</label>
+        <span class="sep"></span>
+        <input type="number" name="window" value="60" />
+        <p> mins</p>
+      </li>
+      <li>
+        <label for="window">Obsrv. rate:</label>
+        <span class="sep"></span>
+        <input type="number" name="window" value="60" />
+        <p> s</p>
+      </li>
+      <li class="sep"></li>
+      <li>
+        <button id="execute">Analyze</button>
+      </li>
+    {% endif %}
+  </ul>
+{% endblock %}
+
+{% block content %}
+  {% if current %}
+    <div class="panel top">
+      <div id="canvas_container">
+        <canvas id="map" width="{{map_width}}" height="{{map_height}}"
+          style="z-index:0"></canvas>
+        <canvas id="selection" width="{{map_width}}" height="{{map_height}}"
+          style="z-index:1"></canvas>
+        <canvas id="highlight" width="{{map_width}}" height="{{map_height}}"
+          style="z-index:2"></canvas>
+      </div>
+    </div>
+    <div class="panel bottom">
+      <ul class="tabs">
+        <li class="tab-link current" data-tab="edges-tab">Edges</li>
+        <li class="tab-link" data-tab="paths-tab">Paths</li>
+        <!-- <li class="tab-link" data-tab="areas-tab">Tab Three</li> -->
+        <li class="tab-link" data-tab="custom-tab">Custom Groups</li>
+      </ul>
+
+      <div id="edges-tab" class="tab-content current">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Lanes</th>
+              <th>Speed</th>
+              <th>Length</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for _id, edge in edges %}
+              <tr class="edge"
+              data-edge-id="{{ _id }}"
+              data-edge-shape="{{ edge['shape'] }}" >
+                <td>{{ _id }}</td>
+                <td>{{ edge['type'] }}</td>
+                <td>{{ edge['lanes'] }}</td>
+                <td>{{ edge['speed'] }} km/h</td>
+                <td>{{ edge['length'] }} m</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="controls">
+        <button id="group_edges_btn">Create group</button>
+        <input id="group_edges_input" type="text" name="groupName">
+        <span class="sep"></span>
+        <button id="sel_all_edges">Select all</button>
+        <button class="desel_all">Deselect all</button>
+      </div>
+      <!-- <div id="paths-tab" class="tab-content">
+        <ul>
+          <li></li>
+        </ul>
+      </div>
+      <div id="custom-tab" class="tab-content">
+        <ul>
+          <li></li>
+        </ul>
+      </div> -->
+    </div>
+  {% else %}
+    <div class=" panel">
+      <canvas id="map" height="0" width="0"></canvas>
+      <h1>Welcome!</h1>
+      <p>Please select a road network from the dropdown menu on the left to start.</p>
+    </div>
+  {% endif %}
+
+
+<!-- 
+  <form method="post">
+    <label for="title">Title</label>
+    <input name="title" id="title" value="{{ request.form['title'] }}" required>
+    <label for="body">Body</label>
+    <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+    <input type="submit" value="Save">
+  </form> -->
+{% endblock %}

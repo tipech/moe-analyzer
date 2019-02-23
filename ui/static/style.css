@@ -1,0 +1,232 @@
+/* ==== General classes and objects ==== */
+
+body {
+    background: white;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid lightgray;
+}
+
+.sep {
+    height: 1em;
+    flex-grow: 1;
+}
+
+
+ul.tabs{
+    margin: 0 0 -2px 0;
+    padding: 0px;
+    list-style: none;
+}
+ul.tabs li{
+    display: inline-block;
+    padding: 10px 15px;
+    cursor: pointer;
+    border: 2px solid lightgray;
+    border-radius: 6px 6px 0 0;
+    /*background-color: lightgray;*/
+}
+
+ul.tabs li.current{
+    position: relative;
+    z-index: 1;
+    background: white;
+    border-bottom-color: white;
+}
+
+.tab-content{
+    min-height: 200px;
+    display: none;
+    background: white;
+    padding: 20px;
+    border: 2px solid lightgray; 
+}
+
+.tab-content.current{
+    display: inherit;
+}
+
+input[type='checkbox'] {
+    margin: 0;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+input[type='number'] {
+    margin: 5px;
+    width: 2.5em;
+    height: 1em;
+    text-align: right;
+    font-size: medium;
+}
+
+
+
+/* ==== Sidebar ==== */
+
+nav {
+    height: 100%;
+    width: 280px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+
+    padding: 10px;
+    box-shadow: 0 0 6px #888888;
+}
+
+nav > h1 {
+    margin: 10px 0;
+    font-size: larger;
+    text-align: center;
+}
+
+nav > ul {
+    padding: 10px 0;
+    list-style: none;
+}
+
+nav ul li {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav li select {
+    display: block;
+    margin-left: 20px;
+    max-width: 161px;
+    font-size: small;
+    background-color: white;
+}
+
+nav li p {
+    margin: 0;
+    min-width: 50px;
+}
+
+nav li button {
+    padding: 5px;
+    margin: 0 auto;
+}
+
+
+/* ==== Main content ==== */
+
+.content {
+    margin-left: 300px;
+    padding: 10px 10px 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel {
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 6px #888888
+}
+
+.panel.top {
+    flex: 0 0 auto;
+    overflow: hidden;
+}
+
+.panel.bottom {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+canvas {
+    display: block;
+    margin: auto;
+}
+
+#canvas_container {
+    position: relative;
+    cursor:move;
+}
+
+canvas:not(#map) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;    
+}
+
+.panel > .tab-content {
+    overflow-y: auto;
+}
+
+table {
+    width:100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+td {
+    padding: 0 20px;
+}
+
+td:not(:first-child) {
+    text-align: right;
+    white-space: nowrap;
+    width: 5%;
+}
+
+
+.edge:hover {
+    background-color: rgba(255, 0, 0, 0.7);
+    cursor: pointer;
+}
+
+.edge.selected {
+    background-color: rgba(0, 51, 255, 0.7);
+}
+
+
+.edge.selected:hover {
+    background-color: rgba(100, 0, 100, 0.7);
+}
+
+
+.controls {
+    margin: 10px 5px 5px;
+    display: flex;
+    min-height: 40px;
+}
+
+button {
+    margin: 5px 5px 0;
+    padding: 0 5px;
+    font-size: medium;
+    background-color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgba(0, 51, 255, 0.7);
+}
+
+
+input[type='text'] {
+    margin: 5px 5px 0;
+    width: 30%;
+    padding-left: 5px;
+    font-size: medium;
+}

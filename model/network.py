@@ -11,7 +11,6 @@ Classes:
 import xml.etree.ElementTree as ET
 import re
 from model.components import *
-from database.db_connector import MongoDBConnector
 
 from pprint import pprint
 
@@ -23,13 +22,16 @@ class RoadNetworkModel():
         # initialize components and parse file
         self.edges = {}
         self.junctions = {}
+        self.bounds = {}
+        # self.graph = {}
 
         # read low-level edges and construct larger systems
         self.read_model(filename)
         self.construct_sections()
 
         #create a MongoDB collection and store the edges by id
-        self.db = MongoDBConnector(self.sections)
+        # self.db = MongoDBConnector(self.sections)
+
 
     def read_model(self, filename):
         """Parse a road network model from xml format to dictionary."""
@@ -37,6 +39,8 @@ class RoadNetworkModel():
         # parse file
         root = ET.parse(filename).getroot()
         
+        pairs = []
+
         # iterate over network edges
         for edge_xml in root.findall('edge'):
 
@@ -44,6 +48,8 @@ class RoadNetworkModel():
             lanes = [lane_xml.attrib for lane_xml in edge_xml.findall('lane')]
             edge = Edge(edge_xml.attrib, lanes)
             self.edges[edge.id] = edge
+
+            pairs+=[pair for lane in edge.lanes for pair in lane.shape.points]
 
         # iterate over network junctions
         for junction_xml in root.findall('junction'):
@@ -53,6 +59,18 @@ class RoadNetworkModel():
                 junction = Junction(junction_xml.attrib)
                 self.junctions[junction.id] = junction
 
+
+        coords = list(zip(*[pair for pair in pairs]))
+
+        # edge shapes bounding box
+        self.bounds = {'x0': min([float(coord) for coord in coords[0]]),
+            'y0': min([float(coord) for coord in coords[1]]),
+            'x1': max([float(coord) for coord in coords[0]]),
+            'y1': max([float(coord) for coord in coords[1]])}
+
+        self.aspect_ratio = ((self.bounds['x1'] - self.bounds['x0'])
+            / (self.bounds['y1'] - self.bounds['y0']))
+        
 
     def construct_sections(self):
         """Combine base road network edges to form mid-scale sections"""
