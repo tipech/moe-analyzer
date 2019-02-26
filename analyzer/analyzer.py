@@ -16,13 +16,12 @@ from pprint import pprint
 
 class MOEAnalyzer():
     """Class responsible for the metric calculation"""
-    def __init__(self, model, loader, calculation_rate = 1, min_speed = 1):
+    def __init__(self, model, loader, calculation_rate = 1):
 
         # basic components and configuration properties
         self.model = model
         self.loader = loader
         self.calc_rate = calculation_rate # in seconds
-        self.min_speed = min_speed
 
         self.vehicles = {}      # vehicle registry
         self.last_cycle = 0     # processing cycle
@@ -71,35 +70,31 @@ class MOEAnalyzer():
 
         for vehicle in self.vehicles.values():
 
-            # if vehicle just entered the network
-            if vehicle.entered_network(self.model):
+            if vehicle.new_entry is not None:
 
                 # update counters for new edge
-                self.model.edges[vehicle.new_entry.edge_id].update_entered(
-                    vehicle.approx_distance_moved(time_diff))
+                if vehicle.new_entry.edge_id in self.model.edges:
+                    (self.model.edge_systems[vehicle.new_entry.edge_id]
+                        .update_entered(vehicle, time_diff))
 
-            # if existing vehicle just left the network
-            elif vehicle.left_network(self.model):
+                # update counters for new systems
+                for system in self.model.path_systems.values():
+                    if vehicle.new_entry.edge_id in system.edges:
+                        system.update_entered(vehicle, time_diff)
 
-                # update counters for old edge
-                self.model.edges[vehicle.last_entry.edge_id].update_left()
 
-            # if existing vehicle changed edges within network
-            elif vehicle.changed_edge():
+            if vehicle.last_entry is not None:
 
-                # update counters for new edge
-                self.model.edges[vehicle.new_entry.edge_id].update_entered(
-                    vehicle.approx_distance_moved(time_diff))
+                # update counters for previous edge
+                if vehicle.last_entry.edge_id in self.model.edges:
+                    (self.model.edge_systems[vehicle.last_entry.edge_id]
+                        .update_left(vehicle))
 
-                # update counters for old edge
-                self.model.edges[vehicle.last_entry.edge_id].update_left()
+                # update counters for previous systems
+                for system in self.model.path_systems.values():
+                    if vehicle.last_entry.edge_id in system.edges:
+                        system.update_left(vehicle)
 
-            # if existing vehicle stayed in the same edge
-            else:
-
-                # update counters for old edge
-                self.model.edges[vehicle.last_entry.edge_id].update_moved(
-                    vehicle.distance_moved())
 
 
     def compute_metrics(self, time_diff):
@@ -109,24 +104,26 @@ class MOEAnalyzer():
         if self.last_cycle != 0:
 
             # iterate through edges and compute metrics
-            for edge in self.model.edges.values():    
-                results = edge.compute_metrics(time_diff, self.min_speed)
+            for edge in self.model.edge_systems.values():    
+                results = edge.compute_metrics(time_diff)
 
-            # iterate through sections and compute metrics
-            for section in self.model.sections.values():    
-                results = section.compute_metrics(time_diff, self.min_speed)
+            # iterate through paths and compute metrics
+            for path in self.model.path_systems.values():    
+                results = path.compute_metrics(time_diff)
 
-                # DEBUG
-                #if section.id == "1367240508":
-                    #print("Time:",self.last_cycle," Edge:",section.id," Metrics:",results)
-                self.model.db.insert(results, self.last_cycle, section)
+                # print(results)
+
+
+
+            # DEBUG
+            # self.model.db.insert(self.metrics, self.last_cycle, section)
 
 
     def reset_counters(self):
         """Reset edge counters, prepare for next timestamp"""
 
         # loop through edges and set distance to 0
-        for edge in self.model.edges.values():
+        for edge in self.model.edge_systems.values():
             edge.total_dist = 0
 
             # NOTE: vehicle entry can be logged/backed up here if necessary

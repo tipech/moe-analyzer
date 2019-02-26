@@ -65,7 +65,6 @@ def index():
         map_height=map_height)
 
 
-
 @app.route('/add_edge_group', methods=['POST'])
 def add_edge_group():
     """Show the configuration tab without loaded road networks."""

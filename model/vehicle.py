@@ -31,23 +31,6 @@ class Vehicle():
             self.new_entry = None
 
 
-    def entered_network(self, network):
-        """Check if vehicle just entered the road network."""
-        return (self.last_entry is None
-            or self.last_entry.edge_id not in network.edges)
-
-
-    def left_network(self, network):
-        """Check if vehicle just left the road network."""
-        return (self.new_entry is None
-            or self.new_entry.edge_id not in network.edges)
-
-
-    def changed_edge(self):
-        """Check if vehicle moved to a different edge in the road network."""
-        return self.last_entry.edge_id != self.new_entry.edge_id
-
-
     def distance_moved(self):
         """Calculate the distance the vehicle traveled within the same edge"""
         return self.new_entry.pos - self.last_entry.pos
