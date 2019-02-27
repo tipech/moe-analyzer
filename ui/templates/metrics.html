@@ -1,10 +1,143 @@
 {% extends 'base.html' %}
 
 {% block sidebar %}
+  <h1>{% block title %}System Performance{% endblock %}</h1>
+  <ul id="metrics-list">
+    <hr>
+    <li><b>Metrics:</b></li>
+    <li class="sep"></li>
+    {% for metric_id, name in metrics.items() %}
+      <li>
+        <label for="{{ metric_id }}">{{ name }}</label>
+        <input class="metric-checkbox" id="{{ metric_id }}" type="checkbox"
+         checked="checked" name="{{ metric_id }}">
+      </li>
+    {% endfor %}
+    <hr>
+  </ul>
+
+  <div id="tab-wrapper">
+      <ul class="tabs">
+        <li class="tab-link current" data-tab="edges-tab">Edges</li>
+        <li class="tab-link" data-tab="paths-tab">Paths</li>
+        <li class="tab-link" data-tab="custom-tab">Custom</li>
+      </ul>
+
+      <div id="edges-tab" class="tab-content current">
+        <div class="table-wrapper">
+          <div class="controls">
+            <button id="sel_all_edges">All</button>
+            <button class="desel_edges">None</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for _id, edge in edges %}
+                <tr class="edge"
+                data-edge-id="{{ _id }}"
+                data-edge-shape="{{ edge['shape'] }}"
+                data-edge-lanes="{{ edge['lanes'] }}" >
+                  <td>{{ _id }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="paths-tab" class="tab-content">
+        <div class="table-wrapper">
+          <div class="controls">
+            <button id="sel_all_paths">All</button>
+            <button class="desel_paths">None</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for _id, path in paths %}
+                <tr class="path"
+                data-path-id="{{ _id }}"
+                data-path-edges="{{ path['edges'] }}" >
+                  <td>{{ path['name'] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="custom-tab" class="tab-content">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for _id, group in groups %}
+                <tr class="group"
+                data-group-id="{{ _id }}"
+                data-group-edges="{{ group['edges'] }}" >
+                  <td>{{ group['name'] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
 {% endblock %}
 
 
 {% block content %}
+  <div class="panel top">
+      <div id="canvas_container">
+        <div id="roadMap"></div>
+      </div>
+    </div>
+
+    {% for _id, edge in edges %}
+      <div data-system-id="{{ _id }}" class="graph-panel panel hidden">
+        <h2>Edge {{ _id }}</h2>
+
+        {% for metric_id, metric_name in metrics.items() %}
+        <h3>{{ metric_name }}</h3>
+        <div class="graph {{ metric_id }}"></div>
+        {% endfor %}
+        
+      </div>
+    {% endfor %}
+
+    {% for _id, path in paths %}
+      <div data-system-id="{{ _id }}" class="graph-panel panel hidden">
+        <h2>Path {{ path['name'] }}</h2>
+
+        {% for metric_id, metric_name in metrics.items() %}
+        <h3>{{ metric_name }}</h3>
+        <div class="graph {{ metric_id }}"></div>
+        {% endfor %}
+        
+      </div>
+    {% endfor %}
+
+    {% for _id, group in groups %}
+      <div data-system-id="{{ _id }}" class="graph-panel panel hidden">
+        <h2>{{ group['name'] }}</h2>
+
+        {% for metric_id, metric_name in metrics.items() %}
+        <h3 class="label {{ metric_id }}">{{ metric_name }}</h3>
+        <div class="graph {{ metric_id }}"></div>
+        {% endfor %}
+        
+      </div>
+    {% endfor %}
 
 {% endblock %}

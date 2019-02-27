@@ -45,6 +45,8 @@ class RoadNetworkModel():
 
         self.path_systems = self.get_path_systems(paths)
 
+        self.add_custom_system("Entire network", self.edges.keys())
+
         #create a MongoDB collection and store the edges by id
         # self.db = MongoDBConnector(self.sections)
 

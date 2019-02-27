@@ -23,6 +23,7 @@ function Map(element='map', center=[0,0], zoom=10,
     colors={'default': "black", 'highlighted': "red", 'selected': "blue"}) {
 
     //  properties
+    this.element = $('#' + element)
     this.map = L.map(element, {center: center, zoom: zoom})  // map element
     this.lines = {}       // line objects dictionary, keyed by edge id
     this.edges = {}       // edge ids dictionary, keyed by line object id

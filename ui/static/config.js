@@ -4,6 +4,7 @@ $(document).ready(config_load_handler)
 // function responsible for all config actions after page load
 function config_load_handler() {
 
+
     // update DOM when network parameters change
     $('#network').change(reload_config)
     $('#shortest_paths').change(reload_config)
@@ -11,7 +12,6 @@ function config_load_handler() {
     // hide simulation parameters when no simulation is selected
     $('#simulation').change(function(){
 
-        console.log($(this).val())
         if ( $(this).val() != "none"){
             $(".sim_parameters").removeClass("hidden")
         } else {
@@ -29,17 +29,16 @@ function config_load_handler() {
 
         // set the table's behavior
         set_behavior('edges-tab')
-        $('ul.tabs li').click(function(){
+
+        // $('.content ul.tabs li').off('click')
+        $('.content ul.tabs li').click(function(){
+            deselect_all()
             set_behavior($(this).attr('data-tab'))
         })
 
-
         // common deselection button
         $('.desel_all').click(function(){
-            $('.selected').removeClass("selected")
-            reset_selections('.edge')
-            reset_selections('.path')
-            reset_selections('.group')
+            deselect_all()
         })
     }
 
@@ -57,8 +56,7 @@ function reload_config(){
             var data = data.replace('<body', '<body><div id="body"')
                 .replace('</body>','</div></body>');
             var body = $(data).filter('#body');
-            $("body").html(body);
-            config_load_handler();
+            $("body").html(body)
         });
 }
 
@@ -118,13 +116,17 @@ function read_edges(){
 }
 
 
+function deselect_all(element_type="") {
+// remove all selections
+    
+    $(element_type + '.selected').removeClass("selected")
+    reset_selections()
+}
+
+
 function set_behavior(tab_id) {
 // Set the appropriate behavior based on the tab the user is viewing
-
-    $('.selected').removeClass("selected")
-    reset_selections('.edge')
-    reset_selections('.path')
-    reset_selections('.group')
+    
     $('.edge').off()
     $('.path').off()
     $('.group').off()
@@ -169,21 +171,22 @@ function edge_list_behavior() {
     // handle edge selecting when mousing over map
     map.on('click', function(ev){
         $(`.edge[data-edge-id="${ev.edge}"]`).toggleClass("selected")
-        map.set_selected(ev.edge, !map.lines[ev.edge].selected) 
+        reset_selections()
     })
-    
+
     // handle edge selecting function when mousing over table
     $('.edge').on('click', function(){ // toggle selected
+        // $(this).off('click')
         $(this).toggleClass("selected")
-        map.set_selected(
-            $(this).attr("data-edge-id"),
-            $(this).hasClass("selected"))
+
+        reset_selections()
     })
+
 
     // select all edges
     $('#sel_all_edges').click(function(){
         $('.edge').addClass("selected")
-        reset_selections('.edge')
+        reset_selections()
     })
 
     // add group button listener
@@ -303,20 +306,20 @@ function path_list_behavior() {
                 path_element.toggleClass("selected")
             })
             
-            reset_selections('.path')
+            reset_selections()
         }
     })
     
     // handle path selecting function when mousing over table
     $('.path').on('click', function(){ // toggle selected
         $(this).toggleClass("selected")
-        reset_selections('.path')
+        reset_selections()
     })
 
     // select all paths
     $('#sel_all_paths').click(function(){
         $('.path').addClass("selected")
-        reset_selections('.path')
+        reset_selections()
     })
 
     // add group button listener
@@ -437,54 +440,46 @@ function group_list_behavior() {
                 group_element.toggleClass("selected")
             })
             
-            reset_selections('.group')
+            reset_selections()
         }
     })
     
     // handle group selecting function when mousing over table
     $('.group').on('click', function(){ // toggle selected
         $(this).toggleClass("selected")
-        reset_selections('.group')
+        reset_selections()
     })
 
     // select all groups
     $('#sel_all_groups').click(function(){
         $('.group').addClass("selected")
-        reset_selections('.group')
+        reset_selections()
     })
 }
 
 
-function reset_selections(type){
-// clear all map line selections and reselect based on path elements
-    
-    // clear all map line selections
+function reset_selections(){
+// clear all map line selections and reselect based on selected elements
+
     map.set_selected(Object.values(map.edges), false)
 
-    if (type == '.edge'){
+    // find selected edges
+    $('.edge.selected').each(function(){
+        edge_id = $(this).attr("data-edge-id")
+        map.set_selected(edge_id, true)
+    })
+    // find selected paths and set all their edges to selected
+   $('.path.selected').each(function(){
+        path_edges = $(this).attr("data-path-edges").split(",")
+        map.set_selected(path_edges, true)
+    })
+    // find selected groups and set all their edges to selected
+   $('.group.selected').each(function(){
+        group_edges = $(this).attr("data-group-edges").split(",")
+        map.set_selected(group_edges, true)
+    })
 
-        // find selected edges
-        $(type + '.selected').each(function(){
-            edge_id = $(this).attr("data-edge-id")
-            map.set_selected(edge_id, true)
-        })
-
-    } else if (type == '.path'){
-
-        // find selected paths and set all their edges to selected
-        $(type + '.selected').each(function(){
-            path_edges = $(this).attr("data-path-edges").split(",")
-            map.set_selected(path_edges, true)
-        })
-
-    } else if (type == '.group'){
-
-        // find selected groups and set all their edges to selected
-        $(type + '.selected').each(function(){
-            path_edges = $(this).attr("data-group-edges").split(",")
-            map.set_selected(path_edges, true)
-        })
-    }
+    window.dispatchEvent(new Event('selection_changed'))
 }
 
 
@@ -494,9 +489,7 @@ function add_group(name, edges){
     if (edges.length > 0 && name != "") {
 
         $('.selected').removeClass("selected")
-        reset_selections('.edge')
-        reset_selections('.path')
-        reset_selections('.group')
+        reset_selections()
         
         $.post({
             url: "/add_edge_group",

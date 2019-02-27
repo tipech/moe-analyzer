@@ -86,10 +86,29 @@ def metrics():
 
     global model
 
+    # DEBUG
+    model = RoadNetworkModel("../data/networks/", "kennedy.net.xml", shortest_paths=True)
+
+    metrics = {
+        "pit": "Percent incomplete trips",
+        "thr": "Throughput",
+        "td": "Total Delay",
+        "dpt": "Delay per trip",
+        "tti": "Travel time index"}
+
+    if model is not None:
+        details, edges, paths, groups = load_model(model)
+    
+    else:
+        details = None
+        edges = {}
+        paths = {}
+
     return render_template('metrics.html',
-        edges=model.edge_systems,
-        paths=model.path_systems,
-        groups=model.custom_systems)
+        metrics=metrics,
+        edges=edges,
+        paths=paths,
+        groups=groups)
 
 
 def list_files(path=""):
@@ -143,7 +162,7 @@ def load_model(model):
         
         # path details
         paths_dict[path.id] = {
-            'name': path.name,
+            'name': path.name.replace("->", u"\u2192 "),
             'order': path.name,  # order by name
             'length': round(sum(system.edge.length
                 for system in path.edge_systems.values()),1),
