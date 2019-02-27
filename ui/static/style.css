@@ -12,11 +12,16 @@ hr {
     border-top: 1px solid lightgray;
 }
 
+.hidden {
+    visibility: hidden;
+}
+
 .sep {
     height: 1em;
     flex-grow: 1;
 }
 
+/* ---- Tab handling ---- */
 
 ul.tabs{
     margin: 0 0 -2px 0;
@@ -43,13 +48,14 @@ ul.tabs li.current{
     min-height: 200px;
     display: none;
     background: white;
-    padding: 20px;
     border: 2px solid lightgray; 
 }
 
 .tab-content.current{
     display: inherit;
 }
+
+/* ---- Input elements ---- */
 
 input[type='checkbox'] {
     margin: 0;
@@ -58,16 +64,36 @@ input[type='checkbox'] {
 }
 
 input[type='number'] {
-    margin: 5px;
+    margin: 0 5px;
     width: 2.5em;
     height: 1em;
     text-align: right;
     font-size: medium;
 }
 
+input[type='text'] {
+    padding-left: 5px;
+    font-size: medium;
+}
 
+select {
+    display: block;
+    font-size: small;
+    background-color: white;
+}
 
-/* ==== Sidebar ==== */
+button {
+    padding: 0 5px;
+    font-size: medium;
+    background-color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgba(0, 51, 255, 0.7);
+}
+
+/* ---- Sidebar ---- */
 
 nav {
     height: 100%;
@@ -87,6 +113,56 @@ nav > h1 {
     text-align: center;
 }
 
+/* ---- Main content ---- */
+
+.content {
+    padding: 10px 10px 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel {
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 6px #888888
+}
+
+.panel.top {
+    height: 50%;
+    flex: 0 0 auto;
+    overflow: hidden;
+}
+
+.panel.bottom {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+
+/* ==== Map related elements ==== */
+
+#roadMap {
+    height: 100%;
+}
+
+#canvas_container {
+    position: relative;
+    height: 100%;
+    cursor:move;
+}
+
+
+/* ==== Config View elements ==== */
+
+/* ---- Sidebar ---- */
+
 nav > ul {
     padding: 10px 0;
     list-style: none;
@@ -99,17 +175,13 @@ nav ul li {
     align-items: center;
 }
 
-nav li select {
-    display: block;
-    margin-left: 20px;
-    max-width: 161px;
-    font-size: small;
-    background-color: white;
-}
-
 nav li p {
     margin: 0;
-    min-width: 50px;
+}
+
+nav li select {
+    flex-grow: 1;
+    margin-left: 30px;
 }
 
 nav li button {
@@ -117,58 +189,33 @@ nav li button {
     margin: 0 auto;
 }
 
+/* ---- Selection/New group controls ---- */
 
-/* ==== Main content ==== */
-
-.content {
-    margin-left: 300px;
-    padding: 10px 10px 0;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+.table-wrapper {
+    width: 100%;
     display: flex;
     flex-direction: column;
+    padding: 10px 20px;
 }
 
-.panel {
-    padding: 10px;
+.controls {
     margin-bottom: 10px;
-    box-shadow: 0 0 6px #888888
-}
-
-.panel.top {
-    flex: 0 0 auto;
-    overflow: hidden;
-}
-
-.panel.bottom {
-    flex: 0 1 auto;
     display: flex;
-    flex-direction: column;
+    min-height: 30px;
 }
 
-canvas {
-    display: block;
-    margin: auto;
+.controls button {
+    margin-top: 5px;
+    
 }
 
-#canvas_container {
-    position: relative;
-    cursor:move;
+.controls input {
+    margin: 5px 5px 0;
+    width: 30%;
+    
 }
 
-canvas:not(#map) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;    
-}
-
-.panel > .tab-content {
-    overflow-y: auto;
-}
+/* ---- Edges table ---- */
 
 table {
     width:100%;
@@ -189,44 +236,15 @@ td:not(:first-child) {
     width: 5%;
 }
 
-
-.edge:hover {
-    background-color: rgba(255, 0, 0, 0.7);
+.highlighted{
+    background-color: rgba(255, 0, 0, 0.7)  !important;
     cursor: pointer;
 }
 
-.edge.selected {
+.selected {
     background-color: rgba(0, 51, 255, 0.7);
 }
 
 
-.edge.selected:hover {
-    background-color: rgba(100, 0, 100, 0.7);
-}
 
-
-.controls {
-    margin: 10px 5px 5px;
-    display: flex;
-    min-height: 40px;
-}
-
-button {
-    margin: 5px 5px 0;
-    padding: 0 5px;
-    font-size: medium;
-    background-color: white;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: rgba(0, 51, 255, 0.7);
-}
-
-
-input[type='text'] {
-    margin: 5px 5px 0;
-    width: 30%;
-    padding-left: 5px;
-    font-size: medium;
-}
+/* ==== Chart View elements ==== */

@@ -488,7 +488,6 @@
         <lane id=":4407689955_1_1" index="1" allow="private emergency authority army vip passenger hov taxi bus coach delivery truck trailer motorcycle evehicle custom1 custom2" speed="27.78" length="12.17" shape="1657.79,5208.82 1661.21,5209.97 1663.55,5210.76 1665.89,5211.55 1669.32,5212.71"/>
         <lane id=":4407689955_1_2" index="2" allow="private emergency authority army vip passenger hov taxi bus coach delivery truck trailer motorcycle evehicle custom1 custom2" speed="27.78" length="12.17" shape="1656.73,5211.95 1660.15,5213.10 1662.50,5213.89 1664.84,5214.68 1668.26,5215.84"/>
     </edge>
-
     <edge id="-122317139" from="469705480" to="414463720" priority="7" type="highway.secondary">
         <lane id="-122317139_0" index="0" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="53.02" shape="1391.74,4525.92 1375.46,4576.38"/>
         <lane id="-122317139_1" index="1" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="53.02" shape="1388.60,4524.91 1372.32,4575.37"/>
@@ -502,6 +501,14 @@
         <lane id="122317139_1" index="1" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="53.02" shape="1359.76,4571.31 1376.04,4520.86"/>
         <lane id="122317139_2" index="2" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="53.02" shape="1362.90,4572.33 1379.18,4521.87"/>
         <lane id="122317139_3" index="3" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="53.02" shape="1366.04,4573.34 1382.32,4522.88"/>
+    </edge>
+    <edge id="-122317140" from="469705482" to="469705480" priority="7" type="highway.secondary">
+        <lane id="-122317140_0" index="0" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="1.20" shape="1389.10,4523.61 1388.60,4524.91"/>
+        <lane id="-122317140_0" index="0" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="1.20" shape="1389.60,4524.11 1389.10,4525.41"/>
+    </edge>
+    <edge id="122317140" from="469705480" to="469705481" priority="7" type="highway.secondary">
+        <lane id="122317140_0" index="0" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="1.20" shape="1376.04,4520.86 1376.50,4519.50"/>
+        <lane id="122317140_0" index="0" disallow="tram rail_urban rail rail_electric ship" speed="27.78" length="1.20" shape="1376.54,4521.36 1377.00,4520.00"/>
     </edge>
     <edge id="122317141" from="1367240508" to="429376943" priority="12" type="highway.motorway_link" spreadType="center" shape="1265.34,4919.72 1262.97,4976.52 1261.21,4994.39 1261.62,5008.17 1266.17,5022.04 1271.45,5033.85 1281.58,5045.08 1296.58,5055.04 1332.83,5073.00 1599.66,5176.71">
         <lane id="122317141_0" index="0" allow="private emergency authority army vip passenger hov taxi bus coach delivery truck trailer motorcycle evehicle custom1 custom2" speed="22.22" length="441.18" shape="1263.89,4954.49 1262.97,4976.52 1261.21,4994.39 1261.62,5008.17 1266.17,5022.04 1271.45,5033.85 1281.58,5045.08 1296.58,5055.04 1332.83,5073.00 1599.66,5176.71"/>
@@ -1438,6 +1445,9 @@
     <junction id="4786045071" type="unregulated" x="1020.82" y="5652.56" incLanes="162247220#2_0 162247220#2_1" intLanes="" shape="1023.90,5653.59 1017.74,5651.53"/>
     <junction id="4786045073" type="unregulated" x="1017.90" y="5623.71" incLanes="" intLanes="" shape="1022.57,5625.20 1013.23,5622.22"/>
     <junction id="985750158" type="unregulated" x="3220.88" y="0.00" incLanes="" intLanes="" shape="3220.88,0.00"/>
+    <junction id="469705481" type="unregulated" x="1376.50" y="4519.50" incLanes="" intLanes="" shape="1376.50,4519.50"/>
+    <junction id="469705482" type="unregulated" x="1389.10" y="4523.61" incLanes="" intLanes="" shape="1389.10,4523.61"/>
+
 
     <junction id=":414463720_8_0" type="internal" x="1367.00" y="4575.31" incLanes=":414463720_3_0 35352289#1_0 35352289#1_1 35352289#1_2" intLanes=":414463720_4_0 :414463720_4_1 :414463720_4_2 :414463720_4_3"/>
 

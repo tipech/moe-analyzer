@@ -10,7 +10,7 @@ Classes:
 
 import xml.etree.ElementTree as ET
 import networkx as nx
-import re
+import re, os
 
 from model.base_components import *
 from model.system_components import *
@@ -19,9 +19,12 @@ from pprint import pprint
 
 class RoadNetworkModel():
     """Read an xml file and construct a representation of the road network"""
-    def __init__(self, filename):
+    def __init__(self, fileroot, name, shortest_paths = False):
 
         # initialize components and parse file
+        self.name = name
+        self.shortest_paths = shortest_paths
+
         self.junctions = {}
         self.edges = {}
         self.edge_systems = {}
@@ -31,7 +34,7 @@ class RoadNetworkModel():
         self.custom_systems = {}
 
         # read low-level edges
-        self.read_model(filename)
+        self.read_model(os.path.join(fileroot, name))
 
         # represent as directed graph
         self.construct_graph()
@@ -71,15 +74,11 @@ class RoadNetworkModel():
                 self.junctions[junction.id] = junction
 
 
-        # get coordinate bounding box from edge shapes
-        coords = list(zip(*[pair for edge in self.edges.values()
-            for pair in edge.shape.points]))
-        self.bounds = {'x0': min(coords[0]), 'y0': min(coords[1]),
-            'x1': max(coords[0]), 'y1': max(coords[1])}
-
-        # calculate aspect ratio 
-        self.aspect_ratio = ((self.bounds['x1'] - self.bounds['x0'])
-            / (self.bounds['y1'] - self.bounds['y0']))
+        # get boundaries of converted and original coordinates
+        self.convBoundary = [float(coord) for coord in
+            root.findall('location')[0].attrib['convBoundary'].split(',')]
+        self.origBoundary = [float(coord) for coord in
+            root.findall('location')[0].attrib['origBoundary'].split(',')]
         
 
     def construct_graph(self):
@@ -115,9 +114,19 @@ class RoadNetworkModel():
         routes = ((source, target) for source in filtered_entrances
             for target in filtered_exits)
             
-        # get all simple paths, groupped by route, as sequences of nodes
-        pathlist = (nx.all_simple_paths(G, source, target)
-            for (source, target) in routes)
+        # find all paths
+        if not self.shortest_paths:
+            
+            # get all simple paths, groupped by route, as sequences of nodes
+            pathlist = (nx.all_simple_paths(G, source, target)
+                for (source, target) in routes)
+
+        # find only shortest paths
+        else:
+            pathlist = ([nx.shortest_path(G, source, target)]
+                for (source, target) in routes
+                if nx.has_path(G, source, target))
+
         
         # flatten list and key paths by source-target pair 
         # (for paths with same source and target, also use incremental id)
@@ -130,7 +139,7 @@ class RoadNetworkModel():
                 target = self.graph.get_edge_data(
                     path[len(path)-2], path[len(path)-1])['edge'].id
 
-                paths[source + "->" + target + "|" + str(index)] = path
+                paths[source + "->" + target.replace("#","_") + "|" + str(index)] = path
 
 
         # return flattenned list of paths, no longer groupped by route

@@ -33,11 +33,16 @@ class Edge():
             self.from_id = None
             self.to_id = None
 
-        # get lanes and shape
+        # get nr. of lanes and edge length (use middle lane)
         self.lanes =[Lane(self.id, lane) for lane in lanes]
         self.lane_count = len(self.lanes)
-        self.shape = self.lanes[0].shape
-        self.length = self.lanes[0].length
+        self.length = self.lanes[round(len(self.lanes)/2)-1].length
+
+        # if edge has attribute 'shape', use it, otherwise get it from lanes
+        if "shape" in edge:
+            self.shape = Shape(edge['shape'])
+        else:
+            self.shape = self.lanes[round(len(self.lanes)/2)-1].shape
 
         # calculate edge min speed
         self.flow_speed = min([lane.speed for lane in self.lanes])
@@ -74,10 +79,8 @@ class Shape():
 
         for index, (x, y) in enumerate(self.points):
 
-            new_x = (((x - old['x0']) / (old['x1'] - old['x0']))
-                * (new['x1'] - new['x0']) + new['x0'])
-            new_y = (((y - old['y0']) / (old['y1'] - old['y0']))
-                * (new['y1'] - new['y0']) + new['y0'])
+            new_x = (x-old[0]) * (new[2]-new[0]) / (old[2]-old[0]) + new[0]
+            new_y = (y-old[1]) * (new[3]-new[1]) / (old[3]-old[1]) + new[1]
 
             self.points[index] = (new_x, new_y)
 

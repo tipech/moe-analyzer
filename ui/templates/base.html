@@ -4,6 +4,7 @@
 <head>
 <title>{% block title %}{% endblock %} - MOE Analyzer</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='leaflet.css') }}" />
 </head>
 
 <body>
@@ -14,9 +15,10 @@
     {% block content %}{% endblock %}
 </section>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<!-- <script src="{{ url_for('static', filename='jquery.mousewheel.min.js') }}"></script></script> -->
-<script src="{{ url_for('static', filename='panzoom.min.js') }}"></script></script>
-<script src="{{ url_for('static', filename='main.js') }}"></script>
+<script src="{{ url_for('static', filename='leaflet.js') }}"></script></script>
+<script src="{{ url_for('static', filename='base.js') }}"></script>
+<script src="{{ url_for('static', filename='config.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='main.js') }}"></script> -->
 </body>
 </html>
 

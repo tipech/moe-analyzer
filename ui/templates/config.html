@@ -10,35 +10,36 @@
         <option value="none"> </option>
     
         {% for network in networks %}
-            <option {{ 'selected="selected"' if network == current['id'] }}
+            <option {{ 'selected="selected"' if network == details['id'] }}
             value="{{ network }}" >{{ network }}</option>
         {% endfor %}
     
       </select>
     </li>
-    {% if current %}
+    {% if details %}
       <li class="sep"></li>
       <li>
         <label>Edges:</label>
-        <p id="edges">{{ current['edge_count'] }}</p>
+        <p id="edges">{{ details['edge_count'] }}</p>
       </li>
       <li>
         <label>Junctions:</label>
-        <p id="junctions">{{ current['junction_count'] }}</p>
+        <p id="junctions">{{ details['junction_count'] }}</p>
       </li>
-      <!-- <li>
+      <li>
         <label>Paths:</label>
-        <p id="paths">{{ current['path_count'] }}</p>
-      </li> -->
+        <p id="paths">{{ details['path_count'] }}</p>
+      </li>
       <li>
         <label>Length:</label>
-        <p id="length">{{ current['total_length'] }} km</p>
-      </li><!-- 
+        <p id="length">{{ details['total_length'] }} km</p>
+      </li>
       <li class="sep"></li>
       <li>
-        <label>Split to groups:</label>
-        <input type="checkbox" name="split"/>
-      </li> -->
+        <label>Shortest paths only:</label>
+        <input id="shortest_paths" type="checkbox" name="shortest_paths"
+          {{ 'checked="checked"' if shortest_paths == "true" }}/>
+      </li>
       <li class="sep"></li>
       <li class="sep"></li>
       <li>
@@ -52,36 +53,32 @@
         </select>
       </li>
       <li class="sep"></li>
-      <li>
-        <label for="window">Obsrv. window:</label>
+      <li class="sim_parameters hidden">
+        <label for="obs_window">Obsrv. window:</label>
         <span class="sep"></span>
-        <input type="number" name="window" value="60" />
+        <input type="number" name="obs_window" value="60" />
         <p> mins</p>
       </li>
-      <li>
-        <label for="window">Obsrv. rate:</label>
+      <li class="sim_parameters hidden">
+        <label for="obs_rate">Obsrv. rate:</label>
         <span class="sep"></span>
-        <input type="number" name="window" value="60" />
+        <input type="number" name="obs_rate" value="60" />
         <p> s</p>
       </li>
       <li class="sep"></li>
-      <li>
-        <button id="execute">Analyze</button>
+      <li class="sim_parameters hidden">
+        <button id="analyze">Analyze</button>
       </li>
     {% endif %}
   </ul>
 {% endblock %}
 
+
 {% block content %}
-  {% if current %}
+  {% if details %}
     <div class="panel top">
       <div id="canvas_container">
-        <canvas id="map" width="{{map_width}}" height="{{map_height}}"
-          style="z-index:0"></canvas>
-        <canvas id="selection" width="{{map_width}}" height="{{map_height}}"
-          style="z-index:1"></canvas>
-        <canvas id="highlight" width="{{map_width}}" height="{{map_height}}"
-          style="z-index:2"></canvas>
+        <div id="roadMap"></div>
       </div>
     </div>
     <div class="panel bottom">
@@ -93,64 +90,99 @@
       </ul>
 
       <div id="edges-tab" class="tab-content current">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Type</th>
-              <th>Lanes</th>
-              <th>Speed</th>
-              <th>Length</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for _id, edge in edges %}
-              <tr class="edge"
-              data-edge-id="{{ _id }}"
-              data-edge-shape="{{ edge['shape'] }}" >
-                <td>{{ _id }}</td>
-                <td>{{ edge['type'] }}</td>
-                <td>{{ edge['lanes'] }}</td>
-                <td>{{ edge['speed'] }} km/h</td>
-                <td>{{ edge['length'] }} m</td>
+        <div class="table-wrapper">
+          <div class="controls">
+            <button id="group_edges_btn">Create group</button>
+            <input id="group_edges_input" type="text" name="groupName" placeholder="Group name">
+            <span class="sep"></span>
+            <button id="sel_all_edges">All</button>
+            <button class="desel_all">None</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Lanes</th>
+                <th>Speed</th>
+                <th>Length</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {% for _id, edge in edges %}
+                <tr class="edge"
+                data-edge-id="{{ _id }}"
+                data-edge-shape="{{ edge['shape'] }}"
+                data-edge-lanes="{{ edge['lanes'] }}" >
+                  <td>{{ _id }}</td>
+                  <td>{{ edge['type'] }}</td>
+                  <td>{{ edge['lanes'] }}</td>
+                  <td>{{ edge['speed'] }} km/h</td>
+                  <td>{{ edge['length'] }} m</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="controls">
-        <button id="group_edges_btn">Create group</button>
-        <input id="group_edges_input" type="text" name="groupName">
-        <span class="sep"></span>
-        <button id="sel_all_edges">Select all</button>
-        <button class="desel_all">Deselect all</button>
-      </div>
-      <!-- <div id="paths-tab" class="tab-content">
-        <ul>
-          <li></li>
-        </ul>
+      <div id="paths-tab" class="tab-content">
+        <div class="table-wrapper">
+          <div class="controls">
+            <button id="group_paths_btn">Create group</button>
+            <input id="group_paths_input" type="text" name="groupName" placeholder="Group name">
+            <span class="sep"></span>
+            <button id="sel_all_paths">All</button>
+            <button class="desel_all">None</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Length</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for _id, path in paths %}
+                <tr class="path"
+                data-path-id="{{ _id }}"
+                data-path-edges="{{ path['edges'] }}" >
+                  <td>{{ path['name'] }}</td>
+                  <td>{{ path['length'] }} m</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div id="custom-tab" class="tab-content">
-        <ul>
-          <li></li>
-        </ul>
-      </div> -->
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Length</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for _id, group in groups %}
+                <tr class="group"
+                data-group-id="{{ _id }}"
+                data-group-edges="{{ group['edges'] }}" >
+                  <td>{{ group['name'] }}</td>
+                  <td>{{ group['length'] }} m</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   {% else %}
     <div class=" panel">
-      <canvas id="map" height="0" width="0"></canvas>
       <h1>Welcome!</h1>
       <p>Please select a road network from the dropdown menu on the left to start.</p>
     </div>
   {% endif %}
 
 
-<!-- 
-  <form method="post">
-    <label for="title">Title</label>
-    <input name="title" id="title" value="{{ request.form['title'] }}" required>
-    <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
-    <input type="submit" value="Save">
-  </form> -->
 {% endblock %}
