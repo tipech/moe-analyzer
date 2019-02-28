@@ -106,14 +106,17 @@ class MOEAnalyzer():
             # iterate through edges and compute metrics
             for edge in self.model.edge_systems.values():    
                 results = edge.compute_metrics(time_diff)
-
+            
             # iterate through paths and compute metrics
             for path in self.model.path_systems.values():    
                 results = path.compute_metrics(time_diff)
 
-                # print(results)
+            # iterate through paths and compute metrics
+            for group in self.model.custom_systems.values():    
+                results = group.compute_metrics(time_diff)
 
-
+            results = self.model.edge_systems["23799457"].compute_metrics(time_diff)
+            pprint(results)
 
             # DEBUG
             # self.model.db.insert(self.metrics, self.last_cycle, section)

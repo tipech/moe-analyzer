@@ -4,26 +4,36 @@ $(document).ready(metrics_load_handler)
 // function responsible for all metrics actions after page load
 function metrics_load_handler() {
 
-    // edge deselection button
-    $('.desel_edges').click(function(){
-        deselect_all('.edge')
-    })
+    // if we are on the metrics view
+    if ($('nav.metrics-view').length > 0) {
 
-    // path deselection button
-    $('.desel_paths').click(function(){
-        deselect_all('.path')
-    })
+        // edge deselection button
+        $('.desel_edges').click(function(){
+            deselect_all('.edge')
+        })
 
-    $('nav ul.tabs li').click(function(){
-        set_behavior($(this).attr('data-tab'))
-    })
-    
-    window.addEventListener('selection_changed', update_panels)
-    $(".metric-checkbox").click(function(){ update_panels() })
+        // path deselection button
+        $('.desel_paths').click(function(){
+            deselect_all('.path')
+        })
 
-    $('.tab-link[data-tab="custom-tab"]').click()
-    $('tr[data-group-id="0"]').click()
-    // update_panels()
+        // group deselection button
+        $('nav ul.tabs li').click(function(){
+            set_behavior($(this).attr('data-tab'))
+        })
+        
+        // bind listeners for parameters/selections changed by user
+        window.addEventListener('selection_changed', update_panels)
+        $(".metric-checkbox").click(function(){ update_panels() })
+
+        // set the entire network as the default element
+        set_behavior('groups-tab')
+        $('.metrics-view tr[data-group-id="0"]').addClass('selected')
+        reset_selections()
+        update_panels()
+    }
+
+    // console.log($('.metrics-view tr[data-group-id="0"]').attr("class"))
 }
 
 function update_panels(){
@@ -55,7 +65,6 @@ function update_selections(){
     // hide all graph panels and show only the selected ones
     $(".graph-panel").addClass("hidden")
     sel_systems.forEach(function(system_id){
-        console.log(`.graph-panel[data-system-id="${system_id}"]`)
         $(`.graph-panel[data-system-id="${system_id}"]`).removeClass("hidden")
     })
 }

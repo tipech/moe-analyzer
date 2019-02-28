@@ -13,7 +13,7 @@ hr {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .sep {
@@ -107,22 +107,16 @@ nav {
     box-shadow: 0 0 6px #888888;
 }
 
-nav > * {
-    padding-left: 5px !important;
-    padding-right: 5px !important;
-}
-
 nav h1 {
     margin: 0;
-    padding: 10px 0;
-    height: 3%;
+    padding: 10px;
     font-size: larger;
     text-align: center;
 }
 
 nav > ul {
     margin: 0;
-    padding-bottom: 10px;
+    padding: 10px;
     list-style: none;
 }
 
@@ -142,25 +136,30 @@ nav > ul > li {
     right: 0;
     bottom: 0;
     left: 300px;
-    display: flex;
-    flex-direction: column;
+    text-align: center;
 }
 
 .panel {
+    text-align: left;
+    display: inline-block;
+    vertical-align: top;
+    max-height: 47%;
+    width: 800px;
     min-height: 25px;
+    overflow-y: auto;
     padding: 10px;
-    margin-bottom: 10px;
     box-shadow: 0 0 6px #888888
 }
 
 .panel.top {
-    height: 50%;
+    height: 47%;
     flex: 0 0 auto;
     overflow: hidden;
 }
 
 .panel.bottom {
     flex: 0 1 auto;
+    margin: auto;
     display: flex;
     flex-direction: column;
 }
@@ -188,8 +187,7 @@ nav li p {
 }
 
 nav li select {
-    flex-grow: 1;
-    margin-left: 30px;
+    max-width: 150px;
 }
 
 nav li button {
@@ -260,16 +258,26 @@ td:not(:first-child) {
 /* ---- Sidebar ---- */
 
 #metrics-list {
-    height: 27%;
+    /*height: 27%;*/
 }
 
 #tab-wrapper {
-    height: 64%;
+    position: absolute;
+    top: 300px;
+    bottom: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
 }
 
-nav #paths-tab td {
+.metrics-view .tab-content {
+    position: absolute;
+    width: 100%;
+    top: 42px;
+    bottom: 0;
+}
+
+.metrics-view #paths-tab td {
     font-size: small;
 }
 
@@ -284,6 +292,10 @@ nav #paths-tab td {
     margin: 0;
     font-size: larger;
     text-align: right;
+}
+
+.graph-panel {
+    /*display: table;*/
 }
 
 .graph {

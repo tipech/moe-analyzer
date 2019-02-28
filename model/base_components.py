@@ -1,4 +1,4 @@
-import re
+import re, copy
 
 class Junction():
     """Representation of a junction in a road network."""
@@ -77,12 +77,16 @@ class Shape():
     def transform(self, old, new):
         """Transform the shape points from one rectangle space to another."""
 
+        # create a copy of this Shape and loop through its points
+        new_shape = copy.deepcopy(self)
         for index, (x, y) in enumerate(self.points):
 
+            # project points
             new_x = (x-old[0]) * (new[2]-new[0]) / (old[2]-old[0]) + new[0]
             new_y = (y-old[1]) * (new[3]-new[1]) / (old[3]-old[1]) + new[1]
+            new_shape.points[index] = (new_x, new_y)
 
-            self.points[index] = (new_x, new_y)
+        return new_shape
 
 
     def get_center(self, rounded=False):

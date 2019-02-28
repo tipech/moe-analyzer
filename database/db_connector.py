@@ -1,4 +1,4 @@
-import pymongo
+import pymongo, time
 from model.network import RoadNetworkModel
 from pprint import pprint
 
@@ -16,30 +16,35 @@ class MongoDBConnector:
 
 
 
-	def store_model(self, model, network_id="kennedy"):
+	def store_execution(self, model, simulation):
 		"""Store the road network info to the database."""
 
+		# create a unique execution id
+		execution_id = "%s_%s_%d" % (model.name, simulation,
+			round(time.time()))
+
+		# create an execution object
 		try:
 			result = self.network_collection.insert_one({
-				'_id': network_id,
-				'bounds': model.bounds,
-				'transform': model.transform})
-			# print('Many posts: {0}'.format(result.inserted_ids))
+				'_id': execution_id,
+				'network': model.name,
+				'simulation': simulation})
 
 		except pymongo.errors.DuplicateKeyError as e:
 			print("Id already exists in the collection.")
 
-
-		self.edge_collection = self.db[str(network_id) + "_edges"]
-		self.sector_collection = self.db[str(network_id) + "_sectors"]
-
-		edges = model.edges
+		# create collections of edges for this execution
+		self.edges_collection = self.db[execution_id + "_edges"]
+		self.paths_collection = self.db[execution_id + "_paths"]
+		self.groups_collection = self.db[execution_id + "_groups"]
 
 		try:
-			result = self.edge_collection.insert_many(
-				{'_id': edge_id, 'shape': edge.shape}
-				for edge_id, edge in edges.items())
-			print('Many posts: {0}'.format(result.inserted_ids))
+			self.edges_collection.insert_many(
+				{'_id': edge} for edge in model.edge_systems.keys())
+			self.paths_collection.insert_many(
+				{'_id': path} for path in model.path_systems.keys())
+			self.groups_collection.insert_many(
+				{'_id': path} for path in model.custom_systems.keys())
 
 		except pymongo.errors.BulkWriteError as e:
 			print("Ids already exist in the collection.")

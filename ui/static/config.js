@@ -29,8 +29,6 @@ function config_load_handler() {
 
         // set the table's behavior
         set_behavior('edges-tab')
-
-        // $('.content ul.tabs li').off('click')
         $('.content ul.tabs li').click(function(){
             deselect_all()
             set_behavior($(this).attr('data-tab'))
@@ -57,6 +55,7 @@ function reload_config(){
                 .replace('</body>','</div></body>');
             var body = $(data).filter('#body');
             $("body").html(body)
+            $(document).ready(config_load_handler)
         });
 }
 
@@ -126,7 +125,7 @@ function deselect_all(element_type="") {
 
 function set_behavior(tab_id) {
 // Set the appropriate behavior based on the tab the user is viewing
-    
+
     $('.edge').off()
     $('.path').off()
     $('.group').off()
@@ -138,7 +137,7 @@ function set_behavior(tab_id) {
     } else if (tab_id == "paths-tab") {
         path_list_behavior()
         
-    } else if (tab_id == "custom-tab") {
+    } else if (tab_id == "groups-tab") {
         group_list_behavior()
         
     }
@@ -310,7 +309,7 @@ function path_list_behavior() {
         }
     })
     
-    // handle path selecting function when mousing over table
+    // handle path selecting function when clicking in table
     $('.path').on('click', function(){ // toggle selected
         $(this).toggleClass("selected")
         reset_selections()
@@ -497,9 +496,9 @@ function add_group(name, edges){
             contentType: "application/json; charset=utf-8",
             dataType: "html",
             success: function( data ) {
-                var custom_groups = $(data).find('#custom-tab');
-                $("#custom-tab").html(custom_groups.first().html());
-                config_load_handler()
+                var custom_groups = $(data).find('#groups-tab');
+                $("#groups-tab").html(custom_groups.first().html());
+                $(document).ready(config_load_handler)
             }})
     }
 }
@@ -517,6 +516,5 @@ function load_metrics(){
                 .replace('</body>','</div></body>');
             var body = $(data).filter('#body');
             $("body").html(body);
-            config_load_handler();
         });
 }

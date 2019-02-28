@@ -1,11 +1,13 @@
 import sys, os
 from flask import Flask, render_template, request
-from pprint import pprint
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-# from database.db_connector import MongoDBConnector
 from model.network import RoadNetworkModel
+from analyzer.loaders import XmlDataLoader
+from analyzer.analyzer import MOEAnalyzer
+from database.db_connector import MongoDBConnector
 
+from pprint import pprint
 
 # os.chdir("..")
 app = Flask(__name__)
@@ -53,22 +55,21 @@ def config():
 def add_edge_group():
     """Add a custom group to the road network model."""
 
-    group = request.get_json()
     
-    # get available networks and simulations
+
+    # check if a model actually exists
+    global model
+    if model is None:
+        return config()
+
+    # add new group to model
+    group = request.get_json()
+    model.add_custom_system(group['name'], group['edges'])
+
+    # re-load model details, networks and simulations for display
+    details, edges, paths, groups = load_model(model)
     root, networks = list_files("data/networks")
     _, simulations = list_files("data/simulations")
-
-    # re-load model to add new groups
-    global model
-    if model is not None:
-        model.add_custom_system(group['name'], group['edges'])
-        details, edges, paths, groups = load_model(model)
-    
-    else:
-        details = None
-        edges = {}
-        paths = {}
 
     return render_template('config.html',
         networks=networks,
@@ -84,25 +85,39 @@ def add_edge_group():
 def metrics():
     """Show the road network configuration view."""
 
+    # get analysis parameters and existing simulations
+    root, simulations = list_files("data/simulations")
+    parameters = request.args
+    
+    # check if model and simulation actually exist
     global model
-
     # DEBUG
     model = RoadNetworkModel("../data/networks/", "kennedy.net.xml", shortest_paths=True)
+    if (model is None or 'simulation' not in parameters
+        or parameters['simulation'] not in simulations):
+        return config()
 
+    
+
+
+    # setup database connection
+    db_connector = MongoDBConnector("mongodb://localhost:27017")
+    db_connector.store_execution(model, parameters['simulation'])
+
+
+    # load data and run the MOE analyzer
+    loader = XmlDataLoader(os.path.join(root, parameters['simulation']))
+    analyzer = MOEAnalyzer(model, loader)
+
+
+    # load model and metric details for display
+    details, edges, paths, groups = load_model(model)
     metrics = {
         "pit": "Percent incomplete trips",
         "thr": "Throughput",
         "td": "Total Delay",
         "dpt": "Delay per trip",
         "tti": "Travel time index"}
-
-    if model is not None:
-        details, edges, paths, groups = load_model(model)
-    
-    else:
-        details = None
-        edges = {}
-        paths = {}
 
     return render_template('metrics.html',
         metrics=metrics,
@@ -140,13 +155,14 @@ def load_model(model):
     for edge in model.edges.values():
 
         # project edge shapes to original lat/lng coordinates
-        edge.shape.transform(model.convBoundary, model.origBoundary)
+        new_shape = edge.shape.transform(model.convBoundary,
+            model.origBoundary)
 
         # edge dtails
         edges_dict[edge.id] = {
             'id': edge.id,
             'order': edge.shape.get_center()[0],   # order by latitude
-            'shape': str(edge.shape),
+            'shape': str(new_shape),
             'type': edge.type,
             'lanes': len(edge.lanes),
             'speed': round(edge.flow_speed * 3.6),
@@ -203,4 +219,4 @@ def load_model(model):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host= '0.0.0.0')

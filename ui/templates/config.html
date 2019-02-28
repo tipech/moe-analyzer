@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block sidebar %}
+<nav class="config-view">
   <h1>{% block title %}System Configuration{% endblock %}</h1>
   <ul>
     <hr>
@@ -71,10 +72,12 @@
       </li>
     {% endif %}
   </ul>
+</nav>
 {% endblock %}
 
 
 {% block content %}
+<section class="content config-view">
   {% if details %}
     <div class="panel top">
       <div id="canvas_container">
@@ -83,10 +86,9 @@
     </div>
     <div class="panel bottom">
       <ul class="tabs">
-        <li class="tab-link current" data-tab="edges-tab">Edges</li>
-        <li class="tab-link" data-tab="paths-tab">Paths</li>
-        <!-- <li class="tab-link" data-tab="areas-tab">Tab Three</li> -->
-        <li class="tab-link" data-tab="custom-tab">Custom Groups</li>
+        <li class="tab-link current" data-tab="edges-tab">&#9903; Edges</li>
+        <li class="tab-link" data-tab="paths-tab">&#9736; Paths</li>
+        <li class="tab-link" data-tab="groups-tab">&#8578; Groups</li>
       </ul>
 
       <div id="edges-tab" class="tab-content current">
@@ -154,7 +156,7 @@
           </table>
         </div>
       </div>
-      <div id="custom-tab" class="tab-content">
+      <div id="groups-tab" class="tab-content">
         <div class="table-wrapper">
           <table>
             <thead>
@@ -184,5 +186,5 @@
     </div>
   {% endif %}
 
-
+</section>
 {% endblock %}
