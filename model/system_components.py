@@ -6,6 +6,9 @@ class System():
         self.id = _id
         self.edges = edges
         self.min_speed = min_speed
+
+        if self.id == "36921389#0->36921465_1|0":
+            print(self.edges)
         
         # setup vehicle counters
         self.v_current = 0          # vehicles in edge right now
@@ -16,6 +19,7 @@ class System():
 
     def update_entered(self, vehicle, time_diff, flow_speed):
         """Check if new vehicle just entered and update counters appropriately."""
+
 
         # check if vehicle came in from a different system or outside
         if (vehicle.last_entry is None
@@ -74,6 +78,10 @@ class System():
             pit = 0 
             dpt = 0
             tti = 1
+
+        # reset counters
+        self.total_dist = 0
+        self.total_ideal_time = 0
 
         self.metrics = {"pit": pit, "throughput": throughput,
             "total_delay": total_delay, "dpt": dpt, "tti": tti}

@@ -47,9 +47,6 @@ class RoadNetworkModel():
 
         self.add_custom_system("Entire network", self.edges.keys())
 
-        #create a MongoDB collection and store the edges by id
-        # self.db = MongoDBConnector(self.sections)
-
 
     def read_model(self, filename):
         """Parse a road network model from xml format to dictionary."""

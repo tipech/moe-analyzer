@@ -16,11 +16,12 @@ from pprint import pprint
 
 class MOEAnalyzer():
     """Class responsible for the metric calculation"""
-    def __init__(self, model, loader, calculation_rate = 1):
+    def __init__(self, model, loader, db, calculation_rate = 1):
 
         # basic components and configuration properties
         self.model = model
         self.loader = loader
+        self.db = db
         self.calc_rate = calculation_rate # in seconds
 
         self.vehicles = {}      # vehicle registry
@@ -77,8 +78,13 @@ class MOEAnalyzer():
                     (self.model.edge_systems[vehicle.new_entry.edge_id]
                         .update_entered(vehicle, time_diff))
 
-                # update counters for new systems
+                # update counters for new paths
                 for system in self.model.path_systems.values():
+                    if vehicle.new_entry.edge_id in system.edges:
+                        system.update_entered(vehicle, time_diff)
+
+                # update counters for new groups
+                for system in self.model.custom_systems.values():
                     if vehicle.new_entry.edge_id in system.edges:
                         system.update_entered(vehicle, time_diff)
 
@@ -90,8 +96,13 @@ class MOEAnalyzer():
                     (self.model.edge_systems[vehicle.last_entry.edge_id]
                         .update_left(vehicle))
 
-                # update counters for previous systems
+                # update counters for previous paths
                 for system in self.model.path_systems.values():
+                    if vehicle.last_entry.edge_id in system.edges:
+                        system.update_left(vehicle)
+
+                # update counters for previous groups
+                for system in self.model.custom_systems.values():
                     if vehicle.last_entry.edge_id in system.edges:
                         system.update_left(vehicle)
 
@@ -103,23 +114,24 @@ class MOEAnalyzer():
         # if it's not the very fist timestep
         if self.last_cycle != 0:
 
+
             # iterate through edges and compute metrics
-            for edge in self.model.edge_systems.values():    
-                results = edge.compute_metrics(time_diff)
+            edge_metrics = {edge.id: edge.compute_metrics(time_diff)
+                for edge in self.model.edge_systems.values()}
+            edge_metrics['time'] = time_diff
             
             # iterate through paths and compute metrics
-            for path in self.model.path_systems.values():    
-                results = path.compute_metrics(time_diff)
+            path_metrics = {path.id: path.compute_metrics(time_diff)
+                for path in self.model.path_systems.values()}
+            path_metrics['time'] = time_diff
 
             # iterate through paths and compute metrics
-            for group in self.model.custom_systems.values():    
-                results = group.compute_metrics(time_diff)
-
-            results = self.model.edge_systems["23799457"].compute_metrics(time_diff)
-            pprint(results)
-
-            # DEBUG
-            # self.model.db.insert(self.metrics, self.last_cycle, section)
+            group_metrics = {group.id: group.compute_metrics(time_diff)
+                for group in self.model.custom_systems.values()}
+            group_metrics['time'] = time_diff
+            
+            # insert calculated metric values to db
+            self.db.insert(edge_metrics, path_metrics, group_metrics)
 
 
     def reset_counters(self):

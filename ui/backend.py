@@ -11,7 +11,7 @@ from pprint import pprint
 
 # os.chdir("..")
 app = Flask(__name__)
-# db = MongoDBConnector("mongodb://localhost:27017")
+db = MongoDBConnector("mongodb://localhost:27017")
 model = None
 
 
@@ -107,7 +107,7 @@ def metrics():
 
     # load data and run the MOE analyzer
     loader = XmlDataLoader(os.path.join(root, parameters['simulation']))
-    analyzer = MOEAnalyzer(model, loader)
+    analyzer = MOEAnalyzer(model, loader, db_connector)
 
 
     # load model and metric details for display
