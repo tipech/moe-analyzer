@@ -271,10 +271,10 @@ td:not(:first-child) {
 }
 
 .metrics-view .tab-content {
-    position: absolute;
+    /*position: absolute;*/
     width: 100%;
-    top: 42px;
-    bottom: 0;
+    /*top: 42px;*/
+    /*bottom: 0;*/
 }
 
 .metrics-view #paths-tab td {
@@ -301,5 +301,11 @@ td:not(:first-child) {
 .graph {
     height: 150px;
     margin-bottom: 10px;
-    background-color: lightgray;
+    background-color: white;
+}
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 3;
 }

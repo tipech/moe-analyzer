@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block sidebar %}
-<nav class="metrics-view">
+<nav class="metrics-view"
+  data-time-start="{{ start_time }}"
+  data-time-end="{{ end_time }}">
   <h1>{% block title %}System Performance{% endblock %}</h1>
   <ul id="metrics-list">
     <hr>
@@ -19,9 +21,9 @@
 
   <div id="tab-wrapper">
       <ul class="tabs">
-        <li class="tab-link" data-tab="edges-tab">E</li>
-        <li class="tab-link" data-tab="paths-tab">P</li>
-        <li class="tab-link current" data-tab="groups-tab">C</li>
+        <li class="tab-link" data-tab="edges-tab">&#9903;</li>
+        <li class="tab-link" data-tab="paths-tab">&#9736;</li>
+        <li class="tab-link current" data-tab="groups-tab">&#8578;</li>
       </ul>
 
       <div id="edges-tab" class="tab-content">
@@ -41,7 +43,8 @@
                 <tr class="edge"
                 data-edge-id="{{ _id }}"
                 data-edge-shape="{{ edge['shape'] }}"
-                data-edge-lanes="{{ edge['lanes'] }}" >
+                data-edge-lanes="{{ edge['lanes'] }}"
+                data-edge-metrics="{{ edge_metrics[_id] }}" >
                   <td>{{ _id }}</td>
                 </tr>
               {% endfor %}
@@ -65,7 +68,8 @@
               {% for _id, path in paths %}
                 <tr class="path"
                 data-path-id="{{ _id }}"
-                data-path-edges="{{ path['edges'] }}" >
+                data-path-edges="{{ path['edges'] }}"
+                data-path-metrics="{{ path_metrics[_id] }}" >
                   <td>{{ path['name'] }}</td>
                 </tr>
               {% endfor %}
@@ -85,7 +89,8 @@
               {% for _id, group in groups %}
                 <tr class="group"
                 data-group-id="{{ _id }}"
-                data-group-edges="{{ group['edges'] }}" >
+                data-group-edges="{{ group['edges'] }}"
+                data-group-metrics="{{ group_metrics[_id] }}" >
                   <td>{{ group['name'] }}</td>
                 </tr>
               {% endfor %}

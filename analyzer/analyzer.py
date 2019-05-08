@@ -16,21 +16,18 @@ from pprint import pprint
 
 class MOEAnalyzer():
     """Class responsible for the metric calculation"""
-    def __init__(self, model, loader, db, calculation_rate = 1):
+    def __init__(self, model, loader, calculation_rate = 1):
 
         # basic components and configuration properties
         self.model = model
         self.loader = loader
-        self.db = db
         self.calc_rate = calculation_rate # in seconds
 
         self.vehicles = {}      # vehicle registry
         self.last_cycle = 0     # processing cycle
 
-        self.main_loop()
 
-
-    def main_loop(self):
+    def get_next_metrics(self):
         """Loop through timesteps as provided from loader and calculate."""
 
         # time loop
@@ -44,14 +41,17 @@ class MOEAnalyzer():
             time_diff = time - self.last_cycle
             if time_diff >= self.calc_rate:
 
+
                 # update edges and calculate metrics for this cycle
                 self.update_counters(time_diff)
-                self.compute_metrics(time_diff)
+                metrics = self.compute_metrics(time_diff)
 
                 # prepare for next cycle
                 self.reset_counters()
                 self.update_vehicles()
                 self.last_cycle = self.last_cycle + self.calc_rate
+
+                yield metrics, time
 
 
     def read_entry(self, entry):
@@ -118,20 +118,21 @@ class MOEAnalyzer():
             # iterate through edges and compute metrics
             edge_metrics = {edge.id: edge.compute_metrics(time_diff)
                 for edge in self.model.edge_systems.values()}
-            edge_metrics['time'] = time_diff
             
             # iterate through paths and compute metrics
             path_metrics = {path.id: path.compute_metrics(time_diff)
                 for path in self.model.path_systems.values()}
-            path_metrics['time'] = time_diff
 
             # iterate through paths and compute metrics
             group_metrics = {group.id: group.compute_metrics(time_diff)
                 for group in self.model.custom_systems.values()}
-            group_metrics['time'] = time_diff
             
-            # insert calculated metric values to db
-            self.db.insert(edge_metrics, path_metrics, group_metrics)
+            # return computed values
+            return edge_metrics, path_metrics, group_metrics
+
+        # if it's the first timestamp, return empty
+        else:
+            return {}, {}, {}
 
 
     def reset_counters(self):
@@ -140,8 +141,6 @@ class MOEAnalyzer():
         # loop through edges and set distance to 0
         for edge in self.model.edge_systems.values():
             edge.total_dist = 0
-
-            # NOTE: vehicle entry can be logged/backed up here if necessary
 
 
     def update_vehicles(self):

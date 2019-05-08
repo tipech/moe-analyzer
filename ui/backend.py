@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, json
 from flask import Flask, render_template, request
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
@@ -11,7 +11,6 @@ from pprint import pprint
 
 # os.chdir("..")
 app = Flask(__name__)
-db = MongoDBConnector("mongodb://localhost:27017")
 model = None
 
 
@@ -83,7 +82,7 @@ def add_edge_group():
 
 @app.route('/metrics')
 def metrics():
-    """Show the road network configuration view."""
+    """Show the resulting metrics view."""
 
     # get analysis parameters and existing simulations
     root, simulations = list_files("data/simulations")
@@ -91,24 +90,62 @@ def metrics():
     
     # check if model and simulation actually exist
     global model
+
     # DEBUG
     model = RoadNetworkModel("../data/networks/", "kennedy.net.xml", shortest_paths=True)
+    
     if (model is None or 'simulation' not in parameters
         or parameters['simulation'] not in simulations):
         return config()
 
-    
-
 
     # setup database connection
-    db_connector = MongoDBConnector("mongodb://localhost:27017")
-    db_connector.store_execution(model, parameters['simulation'])
+    # db_connector = MongoDBConnector("mongodb://localhost:27017")
+    # db_connector.store_execution(model, parameters['simulation'])
 
 
     # load data and run the MOE analyzer
     loader = XmlDataLoader(os.path.join(root, parameters['simulation']))
-    analyzer = MOEAnalyzer(model, loader, db_connector)
+    analyzer = MOEAnalyzer(model, loader)
 
+
+    history = {0: {}, 1: {}, 2: {}}
+    times = []
+
+    # go through entire observation time, calculate metrics and store them
+    for metrics, time in analyzer.get_next_metrics():
+
+        # perform this for edges, paths and groups
+        for i in [0, 1, 2]:
+        
+            # store system metric results keyed by system id then by metric
+            for _id, values in metrics[i].items():
+                
+                # if adding this system for the first time, add metric lists
+                if _id not in history[i]:
+                    history[i][_id] = {}
+
+                    # insert first values to each metric list
+                    for metric, value in values.items():
+                        history[i][_id][metric] = [{"y": value, "x": time}]
+
+                # if system has been added
+                else:
+                    # append new values to each metric list
+                    for metric, value in values.items():
+                        history[i][_id][metric].append({"y":value,"x":time})
+
+            # also keep track of time
+            times.append(time)
+
+    # serialize final metrics into JSON
+    for i in [0, 1, 2]:
+        for _id, values in history[i].items():
+            history[i][_id] = json.dumps(values)
+
+
+    # insert calculated metric values to db
+    # self.db.insert(edge_metrics, path_metrics, group_metrics)
 
     # load model and metric details for display
     details, edges, paths, groups = load_model(model)
@@ -123,7 +160,12 @@ def metrics():
         metrics=metrics,
         edges=edges,
         paths=paths,
-        groups=groups)
+        groups=groups,
+        edge_metrics=history[0],
+        path_metrics=history[1],
+        group_metrics=history[2],
+        start_time=times[0],
+        end_time=times[len(times)-1])
 
 
 def list_files(path=""):

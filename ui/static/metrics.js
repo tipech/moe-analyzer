@@ -22,18 +22,19 @@ function metrics_load_handler() {
             set_behavior($(this).attr('data-tab'))
         })
         
-        // bind listeners for parameters/selections changed by user
-        window.addEventListener('selection_changed', update_panels)
-        $(".metric-checkbox").click(function(){ update_panels() })
 
         // set the entire network as the default element
         set_behavior('groups-tab')
         $('.metrics-view tr[data-group-id="0"]').addClass('selected')
         reset_selections()
         update_panels()
-    }
 
-    // console.log($('.metrics-view tr[data-group-id="0"]').attr("class"))
+        // bind listeners for parameters/selections changed by user
+        window.addEventListener('selection_changed', update_panels)
+        $(".metric-checkbox").click(function(){ update_panels() })
+
+        draw_charts()
+    }
 }
 
 function update_panels(){
@@ -82,4 +83,106 @@ function update_metrics(){
             $(".graph." + id).addClass("hidden")
         }
     })
+}
+
+
+function draw_charts(){
+
+    var margin = {top: 20, right: 20, bottom: 20, left: 40}
+
+    // get the width of any graph that isn't hidden
+    var width = $("#roadMap").first().width() - margin.left - margin.right
+    var height = $(".graph").first().height() - margin.top - margin.bottom
+
+    // get common chart X scale
+    var xScale = d3.scaleLinear()
+        .domain([
+            $(".metrics-view").attr("data-time-start"),
+            $(".metrics-view").attr("data-time-end")]) // input
+        .range([0, width]); // output
+
+
+    // draw all edge charts
+    $("tr.edge").each(function(){
+
+        // get the id and metric values for this edge
+        var edge_id = $(this).attr("data-edge-id")
+        var dataset = JSON.parse($(this).attr("data-edge-metrics"))
+
+        draw_metric_chart(edge_id, dataset, margin, width, height, xScale)        
+    })
+
+    // draw all path charts
+    $("tr.path").each(function(){
+
+        // get the id and metric values for this path
+        var path_id = $(this).attr("data-path-id")
+        var dataset = JSON.parse($(this).attr("data-path-metrics"))
+
+        draw_metric_chart(path_id, dataset, margin, width, height, xScale)
+    })
+
+    // draw all group charts
+    $("tr.group").each(function(){
+
+        // get the id and metric values for this group
+        var group_id = $(this).attr("data-group-id")
+        var dataset = JSON.parse($(this).attr("data-group-metrics"))
+
+        draw_metric_chart(group_id, dataset, margin, width, height, xScale)        
+    })
+
+}
+
+
+function draw_metric_chart(system_id, dataset, margin, width, height, xScale){
+
+    // get all the individual metrics
+    Object.keys(dataset).forEach(function(metric) {
+
+        var peak = Math.max(...dataset[metric].map(function(d){
+                return d["y"]
+            }))
+
+        // Y scale will is based on maximum values
+        var yScale = d3.scaleLinear()
+            .domain([0, peak]) // input 
+            .range([height, 0]); // output
+
+        // Line generator
+        var line = d3.line()
+            .x(function(d, i) { return xScale(i); })
+            .y(function(d) { return yScale(d.y); })
+            .curve(d3.curveMonotoneX) // smoothing
+
+
+        // Create the main svg element for the chart
+        var svg = d3.selectAll(".graph-panel")
+            .filter('[data-system-id="'+system_id+'"]')
+            .select(".graph."+metric)
+            .append("svg")
+                .attr("width", width)
+                .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")")
+
+        // Create X axis component
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(xScale));
+
+        // Create Y axis component
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(yScale).ticks(5));
+
+        // Append the path, bind the data, and call the line generator 
+        svg.append("path")
+            .datum(dataset[metric])
+            .attr("class", "line")
+            .attr("d", line);
+    });
+
 }

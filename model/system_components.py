@@ -6,9 +6,6 @@ class System():
         self.id = _id
         self.edges = edges
         self.min_speed = min_speed
-
-        if self.id == "36921389#0->36921465_1|0":
-            print(self.edges)
         
         # setup vehicle counters
         self.v_current = 0          # vehicles in edge right now
@@ -38,6 +35,12 @@ class System():
         # enforcing minimum speed (default 1 m/s) per car
         distance = max(distance, self.min_speed * time_diff)
 
+        if distance == 0:
+
+            print(time_diff)
+            print(self.min_speed)
+            print(self)
+
         self.total_dist += distance
         self.total_ideal_time += distance / flow_speed
 
@@ -56,11 +59,11 @@ class System():
     def compute_metrics(self, time_diff):
         """Compute and update HCM MOE values for a generic system."""
 
-        
         throughput = self.v_current / time_diff
-        
+
         # if cars actually  passed
-        if self.v_current != 0:
+        if self.v_current != 0 and self.total_ideal_time != 0:
+
 
             # Total Delay calculation, min speed is 1 m/s to prevent artifacts
             total_time = time_diff * self.v_current
@@ -69,6 +72,11 @@ class System():
             # Percent Incomplete Trips, Delay per Trip, Travel Time Index
             pit = self.v_current / self.v_visited
             dpt = total_delay / self.v_current
+
+            if self.total_ideal_time == 0:
+                print(self.total_ideal_time)
+                print(self)
+
             tti = total_time / self.total_ideal_time
 
         # no cars passed, default values
@@ -83,8 +91,8 @@ class System():
         self.total_dist = 0
         self.total_ideal_time = 0
 
-        self.metrics = {"pit": pit, "throughput": throughput,
-            "total_delay": total_delay, "dpt": dpt, "tti": tti}
+        self.metrics = {"pit": pit, "thr": throughput,
+            "td": total_delay, "dpt": dpt, "tti": tti}
 
         return self.metrics
 

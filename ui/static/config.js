@@ -55,7 +55,7 @@ function reload_config(){
                 .replace('</body>','</div></body>');
             var body = $(data).filter('#body');
             $("body").html(body)
-            $(document).ready(config_load_handler)
+            // $(document).ready(config_load_handler)
         });
 }
 
@@ -167,13 +167,13 @@ function edge_list_behavior() {
         map.set_highlighted( $(this).attr("data-edge-id"), false)
     })
 
-    // handle edge selecting when mousing over map
+    // handle edge selecting when clicking on map
     map.on('click', function(ev){
         $(`.edge[data-edge-id="${ev.edge}"]`).toggleClass("selected")
         reset_selections()
     })
 
-    // handle edge selecting function when mousing over table
+    // handle edge selecting function when clicking on table
     $('.edge').on('click', function(){ // toggle selected
         // $(this).off('click')
         $(this).toggleClass("selected")
@@ -512,6 +512,7 @@ function load_metrics(){
         'obs_window': $("#obs_window").val(),
         'obs_rate': $("#obs_rate").val()},
         function( data ) {
+
             var data = data.replace('<body', '<body><div id="body"')
                 .replace('</body>','</div></body>');
             var body = $(data).filter('#body');
