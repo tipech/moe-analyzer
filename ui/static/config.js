@@ -519,6 +519,12 @@ function load_metrics(){
     $.get("/metrics", 
         {'simulation': $('#simulation').val(),
         'obs_rate': $("#obs_rate").val(),
+        'pce_car': $("#pce_car").val(),
+        'pce_moto': $("#pce_moto").val(),
+        'pce_truck': $("#pce_truck").val(),
+        'pce_bus': $("#pce_bus").val(),
+        'pce_taxi': $("#pce_taxi").val(),
+        'pce_other': $("#pce_other").val(),
         'hide_internals': $("#hide_internals").is(":checked")},
         function( data ) {
 

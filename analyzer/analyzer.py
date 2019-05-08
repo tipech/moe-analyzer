@@ -16,11 +16,12 @@ from pprint import pprint
 
 class MOEAnalyzer():
     """Class responsible for the metric calculation"""
-    def __init__(self, model, loader, calculation_rate = 2):
+    def __init__(self, model, loader, pce, calculation_rate = 1, ):
 
         # basic components and configuration properties
         self.model = model
         self.loader = loader
+        self.pce = pce
         self.calc_rate = calculation_rate # in seconds
 
         self.vehicles = {}      # vehicle registry
@@ -59,7 +60,7 @@ class MOEAnalyzer():
 
         # if vehicle is seen for the first time, create it
         if entry.id not in self.vehicles.keys():
-            self.vehicles[entry.id] = Vehicle(entry)
+            self.vehicles[entry.id] = Vehicle(entry, self.pce)
 
         # if vehicle was already in system, update entry
         else:

@@ -105,8 +105,14 @@ def metrics():
 
 
     # load data and run the MOE analyzer
+    pce = {"car": float(parameters['pce_car']),
+        "moto": float(parameters['pce_moto']),
+        "truck": float(parameters['pce_truck']),
+        "bus": float(parameters['pce_bus']),
+        "taxi": float(parameters['pce_taxi']),
+        "other": float(parameters['pce_other'])}
     loader = XmlDataLoader(os.path.join(root, parameters['simulation']))
-    analyzer = MOEAnalyzer(model, loader, float(parameters['obs_rate']))
+    analyzer = MOEAnalyzer(model, loader, pce, float(parameters['obs_rate']))
 
 
     history = {0: {}, 1: {}, 2: {}}

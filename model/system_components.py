@@ -15,7 +15,7 @@ class System():
 
 
     def update_entered(self, vehicle, time_diff, flow_speed):
-        """Check if new vehicle just entered and update counters appropriately."""
+        """Check if new vehicle entered, update counters appropriately."""
 
 
         # check if vehicle came in from a different system or outside
@@ -23,8 +23,8 @@ class System():
             or vehicle.last_entry.edge_id not in self.edges):
             
             # update counters
-            self.v_current += 1
-            self.v_visited += 1
+            self.v_current += 1 * vehicle.multiplier
+            self.v_visited += 1 * vehicle.multiplier
             distance = vehicle.approx_distance_moved(time_diff)
 
         # vehicle moved within the same system
@@ -34,12 +34,7 @@ class System():
         # correct total distance and ideal time for stopped cars by
         # enforcing minimum speed (default 1 m/s) per car
         distance = max(distance, self.min_speed * time_diff)
-
-        if distance == 0:
-
-            print(time_diff)
-            print(self.min_speed)
-            print(self)
+        distance *= vehicle.multiplier
 
         self.total_dist += distance
         self.total_ideal_time += distance / flow_speed
@@ -53,7 +48,7 @@ class System():
             or vehicle.new_entry.edge_id not in self.edges):
             
             # update counter
-            self.v_current -= 1
+            self.v_current -= 1 * vehicle.multiplier
 
 
     def compute_metrics(self, time_diff):
@@ -153,4 +148,4 @@ class CustomSystem(MultiEdgeSystem):
         
 
     def __repr__(self):
-        return ('{}({}|{})'.format(self.__class__.__name__, self.name, self.id))
+        return ('{}({}|{})'.format(self.__class__.__name__,self.name,self.id))
