@@ -8,6 +8,7 @@ function config_load_handler() {
     // update DOM when network parameters change
     $('#network').change(reload_config)
     $('#shortest_paths').change(reload_config)
+    $('#hide_internals').change(reload_config)
 
     // hide simulation parameters when no simulation is selected
     $('#simulation').change(function(){
@@ -47,9 +48,17 @@ function config_load_handler() {
 function reload_config(){
 // reload the entire config page
 
+    // remember network, shortest paths and hide_internals paramaters
+    parameters = {'network': $('#network').val()}
+    if($("#shortest_paths").length){
+        parameters['shortest_paths'] = $("#shortest_paths").is(":checked")
+    }
+    if($("#hide_internals").length){
+        parameters['hide_internals'] = $("#hide_internals").is(":checked")
+    }
+
     $.get("/config", 
-        {'network': $('#network').val(),
-        'shortest_paths': $("#shortest_paths").is(":checked")},
+        parameters,
         function( data ) {
             var data = data.replace('<body', '<body><div id="body"')
                 .replace('</body>','</div></body>');
@@ -507,14 +516,10 @@ function add_group(name, edges){
 function load_metrics(){
 // reload the entire metrics page
 
-    console.log({'simulation': $('#simulation').val(),
-        'obs_window': $("#obs_window").val(),
-        'obs_rate': $("#obs_rate").val()})
-
     $.get("/metrics", 
         {'simulation': $('#simulation').val(),
-        'obs_window': $("#obs_window").val(),
-        'obs_rate': $("#obs_rate").val()},
+        'obs_rate': $("#obs_rate").val(),
+        'hide_internals': $("#hide_internals").is(":checked")},
         function( data ) {
 
             var data = data.replace('<body', '<body><div id="body"')

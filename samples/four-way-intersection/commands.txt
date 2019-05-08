@@ -1,0 +1,10 @@
+With the SUMO directory added as a PATH variable:
+
+Command used to generate light traffic:
+
+randomTrips.py -n ~/Documents/moe-analyzer/samples/four-way-intersection/osm.net.xml -e 3000 --period 10 -o ~/Documents/moe-analyzer/samples/four-way-intersection/osm.passenger.trips.xml --route-file ~/Documents/moe-analyzer/samples/four-way-intersection/osm.passenger.rou.xml --fringe-factor 10 --validate --trip-attributes="departLane=\"best\" departSpeed=\"max\" departPos=\"random\""
+
+Command used to generate heavy traffic:
+
+randomTrips.py -n ~/Documents/moe-analyzer/samples/four-way-intersection/osm.net.xml -e 3000 --period 1.7 -o ~/Documents/moe-analyzer/samples/four-way-intersection/osm.passenger.trips.xml --route-file ~/Documents/moe-analyzer/samples/four-way-intersection/osm.passenger.rou.xml --fringe-factor 10 --validate --trip-attributes="departLane=\"best\" departSpeed=\"max\" departPos=\"random\""
+

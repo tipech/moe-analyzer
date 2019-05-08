@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!-- generated on 2018-11-07 15:01:43.817462 by $Id: route2trips.py 18237 2015-04-20 10:43:52Z namdre $ -->
+<trips>
+    <vType vClass="passenger" id="passenger"/>
+    <trip id="veh2" depart="18.00" departLane="best" from="376316643" to="162247220#1" type="passenger"/>
+    <trip id="veh8" depart="71.98" departLane="best" from="4934602" to="23799470#2" type="passenger"/>
+    <trip id="veh16" depart="143.97" departLane="best" from="221555637#0" to="23799461#1" type="passenger"/>
+    <trip id="veh22" depart="197.96" departLane="best" from="376316643" to="36921465#1" type="passenger"/>
+    <trip id="veh23" depart="206.96" departLane="best" from="23799450" to="162247219#0" type="passenger"/>
+    <trip id="veh27" depart="242.95" departLane="best" from="376316644#0" to="300391145" type="passenger"/>
+    <trip id="veh33" depart="296.94" departLane="best" from="221555637#0" to="23799470#2" type="passenger"/>
+    <trip id="veh47" depart="422.91" departLane="best" from="376316643" to="36921465#1" type="passenger"/>
+    <trip id="veh49" depart="440.91" departLane="best" from="376316643" to="4934586" type="passenger"/>
+    <trip id="veh51" depart="458.90" departLane="best" from="36921389#0" to="220248218#0" type="passenger"/>
+    <trip id="veh59" depart="530.89" departLane="best" from="221555638#0" to="23799456" type="passenger"/>
+    <trip id="veh63" depart="566.88" departLane="best" from="376316643" to="162247220#1" type="passenger"/>
+    <trip id="veh71" depart="638.87" departLane="best" from="4934641" to="162247220#1" type="passenger"/>
+    <trip id="veh73" depart="656.86" departLane="best" from="376316643" to="23799457" type="passenger"/>
+    <trip id="veh78" depart="701.85" departLane="best" from="300391145" to="162247220#1" type="passenger"/>
+    <trip id="veh84" depart="755.84" departLane="best" from="23799457" to="36921465#1" type="passenger"/>
+    <trip id="veh86" depart="773.84" departLane="best" from="4934602" to="99149460#0" type="passenger"/>
+    <trip id="veh93" depart="836.83" departLane="best" from="221555637#0" to="222152277" type="passenger"/>
+    <trip id="veh95" depart="854.82" departLane="best" from="23799456" to="220248218#0" type="passenger"/>
+    <trip id="veh96" depart="863.82" departLane="best" from="376316643" to="23799457" type="passenger"/>
+    <trip id="veh101" depart="908.81" departLane="best" from="221555637#0" to="23799450" type="passenger"/>
+</trips>

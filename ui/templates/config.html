@@ -41,6 +41,11 @@
         <input id="shortest_paths" type="checkbox" name="shortest_paths"
           {{ 'checked="checked"' if shortest_paths == "true" }}/>
       </li>
+      <li>
+        <label>Hide internal edges:</label>
+        <input id="hide_internals" type="checkbox" name="hide_internals"
+          {{ 'checked="checked"' if hide_internals == "true" }}/>
+      </li>
       <li class="sep"></li>
       <li class="sep"></li>
       <li>
@@ -54,12 +59,6 @@
         </select>
       </li>
       <li class="sep"></li>
-      <li class="sim_parameters hidden">
-        <label for="obs_window">Obsrv. window:</label>
-        <span class="sep"></span>
-        <input id="obs_window" type="number" name="obs_window" value="60" />
-        <p> mins</p>
-      </li>
       <li class="sim_parameters hidden">
         <label for="obs_rate">Obsrv. rate:</label>
         <span class="sep"></span>
@@ -115,7 +114,8 @@
                 <tr class="edge"
                 data-edge-id="{{ _id }}"
                 data-edge-shape="{{ edge['shape'] }}"
-                data-edge-lanes="{{ edge['lanes'] }}" >
+                data-edge-lanes="{{ edge['lanes'] }}" 
+                style="{{ 'display:none;' if hide_internals=='true' and edge['type'] == 'internal' else '' }}">
                   <td>{{ _id }}</td>
                   <td>{{ edge['type'] }}</td>
                   <td>{{ edge['lanes'] }}</td>

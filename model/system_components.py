@@ -67,7 +67,7 @@ class System():
 
             # Total Delay calculation, min speed is 1 m/s to prevent artifacts
             total_time = time_diff * self.v_current
-            total_delay = total_time - self.total_ideal_time
+            total_delay = max(0, total_time - self.total_ideal_time)
 
             # Percent Incomplete Trips, Delay per Trip, Travel Time Index
             pit = self.v_current / self.v_visited

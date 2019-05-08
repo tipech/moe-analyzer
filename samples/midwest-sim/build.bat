@@ -1,0 +1,1 @@
+python "%SUMO_HOME%\tools\randomTrips.py" -n osm.net.xml --seed 42 --fringe-factor 5 -p 1.222550 -r osm.passenger.rou.xml -o osm.passenger.trips.xml -e 1200 --vehicle-class passenger --vclass passenger --prefix veh --min-distance 300 --trip-attributes "departLane=\"best\"" --validate

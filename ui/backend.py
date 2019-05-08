@@ -23,7 +23,14 @@ def config():
     root, networks = list_files("../data/networks/")
     _, simulations = list_files("../data/simulations/")
     selection = request.args.get('network')
+
+    # get shortest paths and hide_internals parameters
     shortest_paths = request.args.get('shortest_paths')
+    if shortest_paths is None:
+        shortest_paths = "true"
+    hide_internals = request.args.get('hide_internals')
+    if hide_internals is None:
+        hide_internals = "true"
     
     # one of the valid networks was selected, load it
     global model
@@ -43,6 +50,7 @@ def config():
     return render_template('config.html',
         networks=networks,
         shortest_paths=shortest_paths,
+        hide_internals=hide_internals,
         simulations=simulations,
         details=details,
         edges=edges,
@@ -91,9 +99,6 @@ def metrics():
     # check if model and simulation actually exist
     global model
 
-    # DEBUG
-    # model = RoadNetworkModel("../data/networks/", "kennedy.net.xml", shortest_paths=True)
-    
     if (model is None or 'simulation' not in parameters
         or parameters['simulation'] not in simulations):
         return config()
@@ -160,7 +165,9 @@ def metrics():
         path_metrics=history[1],
         group_metrics=history[2],
         start_time=times[0],
-        end_time=times[len(times)-1])
+        end_time=times[len(times)-1],
+        simulation=parameters['simulation'],
+        hide_internals=parameters['hide_internals'])
 
 
 def list_files(path=""):
@@ -235,7 +242,7 @@ def load_model(model):
             'name': group.name,
             'order': group.name,  # order by name
             'length': round(sum(system.edge.length
-                for system in path.edge_systems.values()),1),
+                for system in group.edge_systems.values()),1),
             'edges': ','.join(str(system.edge.id)
                 for system in group.edge_systems.values())
         }
