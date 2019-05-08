@@ -7,6 +7,11 @@
   <h1>{% block title %}System Performance{% endblock %}</h1>
   <ul id="metrics-list">
     <hr>
+    <li>
+      <label><b>Interpolation:</b></label>
+      <input id="beta" type="range" name="beta" min="0" max="0.8" step="0.2">
+    </li>
+    <li class="sep"></li>
     <li><b>Metrics:</b></li>
     <li class="sep"></li>
     {% for metric_id, name in metrics.items() %}
@@ -16,8 +21,8 @@
          checked="checked" name="{{ metric_id }}">
       </li>
     {% endfor %}
-    <hr>
   </ul>
+  <hr>
 
   <div id="tab-wrapper">
       <ul class="tabs">

@@ -507,6 +507,10 @@ function add_group(name, edges){
 function load_metrics(){
 // reload the entire metrics page
 
+    console.log({'simulation': $('#simulation').val(),
+        'obs_window': $("#obs_window").val(),
+        'obs_rate': $("#obs_rate").val()})
+
     $.get("/metrics", 
         {'simulation': $('#simulation').val(),
         'obs_window': $("#obs_window").val(),

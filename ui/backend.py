@@ -20,8 +20,8 @@ def config():
     """Show the road network configuration view."""
 
     # get available networks and simulations
-    root, networks = list_files("data/networks")
-    _, simulations = list_files("data/simulations")
+    root, networks = list_files("../data/networks/")
+    _, simulations = list_files("../data/simulations/")
     selection = request.args.get('network')
     shortest_paths = request.args.get('shortest_paths')
     
@@ -85,28 +85,23 @@ def metrics():
     """Show the resulting metrics view."""
 
     # get analysis parameters and existing simulations
-    root, simulations = list_files("data/simulations")
+    root, simulations = list_files("../data/simulations/")
     parameters = request.args
     
     # check if model and simulation actually exist
     global model
 
     # DEBUG
-    model = RoadNetworkModel("../data/networks/", "kennedy.net.xml", shortest_paths=True)
+    # model = RoadNetworkModel("../data/networks/", "kennedy.net.xml", shortest_paths=True)
     
     if (model is None or 'simulation' not in parameters
         or parameters['simulation'] not in simulations):
         return config()
 
 
-    # setup database connection
-    # db_connector = MongoDBConnector("mongodb://localhost:27017")
-    # db_connector.store_execution(model, parameters['simulation'])
-
-
     # load data and run the MOE analyzer
     loader = XmlDataLoader(os.path.join(root, parameters['simulation']))
-    analyzer = MOEAnalyzer(model, loader)
+    analyzer = MOEAnalyzer(model, loader, float(parameters['obs_rate']))
 
 
     history = {0: {}, 1: {}, 2: {}}

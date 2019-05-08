@@ -32,8 +32,11 @@ function metrics_load_handler() {
         // bind listeners for parameters/selections changed by user
         window.addEventListener('selection_changed', update_panels)
         $(".metric-checkbox").click(function(){ update_panels() })
+        $("#beta").change(function(){
+            draw_charts( 1 - $(this).val() )
+        })
 
-        draw_charts()
+        draw_charts(1)
     }
 }
 
@@ -86,9 +89,9 @@ function update_metrics(){
 }
 
 
-function draw_charts(){
+function draw_charts(beta){
 
-    var margin = {top: 20, right: 20, bottom: 20, left: 40}
+    var margin = {top: 20, right: 10, bottom: 20, left: 40}
 
     // get the width of any graph that isn't hidden
     var width = $("#roadMap").first().width() - margin.left - margin.right
@@ -109,7 +112,7 @@ function draw_charts(){
         var edge_id = $(this).attr("data-edge-id")
         var dataset = JSON.parse($(this).attr("data-edge-metrics"))
 
-        draw_metric_chart(edge_id, dataset, margin, width, height, xScale)        
+        draw_chart(edge_id, dataset, margin, width, height, xScale, beta)        
     })
 
     // draw all path charts
@@ -119,7 +122,7 @@ function draw_charts(){
         var path_id = $(this).attr("data-path-id")
         var dataset = JSON.parse($(this).attr("data-path-metrics"))
 
-        draw_metric_chart(path_id, dataset, margin, width, height, xScale)
+        draw_chart(path_id, dataset, margin, width, height, xScale, beta)
     })
 
     // draw all group charts
@@ -129,13 +132,13 @@ function draw_charts(){
         var group_id = $(this).attr("data-group-id")
         var dataset = JSON.parse($(this).attr("data-group-metrics"))
 
-        draw_metric_chart(group_id, dataset, margin, width, height, xScale)        
+        draw_chart(group_id, dataset, margin, width, height, xScale, beta)        
     })
 
 }
 
 
-function draw_metric_chart(system_id, dataset, margin, width, height, xScale){
+function draw_chart(system_id, dataset, margin, width, height, xScale, beta){
 
     // get all the individual metrics
     Object.keys(dataset).forEach(function(metric) {
@@ -150,11 +153,17 @@ function draw_metric_chart(system_id, dataset, margin, width, height, xScale){
             .range([height, 0]); // output
 
         // Line generator
-        var line = d3.line()
-            .x(function(d, i) { return xScale(i); })
+        var line = d3.line()  
+            .x(function(d) { return xScale(d.x); })
             .y(function(d) { return yScale(d.y); })
-            .curve(d3.curveMonotoneX) // smoothing
+            .curve(d3.curveBundle.beta(beta)) // smoothing
 
+
+        // clear previous svg if it exists
+        d3.selectAll(".graph-panel")
+            .filter('[data-system-id="'+system_id+'"]')
+            .select(".graph."+metric)
+            .select("svg").remove()
 
         // Create the main svg element for the chart
         var svg = d3.selectAll(".graph-panel")

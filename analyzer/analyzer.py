@@ -16,7 +16,7 @@ from pprint import pprint
 
 class MOEAnalyzer():
     """Class responsible for the metric calculation"""
-    def __init__(self, model, loader, calculation_rate = 1):
+    def __init__(self, model, loader, calculation_rate = 2):
 
         # basic components and configuration properties
         self.model = model
