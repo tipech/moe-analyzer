@@ -10,7 +10,6 @@ Classes:
 """
 
 from model.vehicle import Vehicle
-from pprint import pprint
 
 
 

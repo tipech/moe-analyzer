@@ -11,7 +11,6 @@ Classes:
 
 import xml.etree.ElementTree as ET
 from model.vehicle import Entry
-from pprint import pprint
 
 
 class XmlDataLoader():

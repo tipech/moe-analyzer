@@ -5,9 +5,6 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from model.network import RoadNetworkModel
 from analyzer.loaders import XmlDataLoader
 from analyzer.analyzer import MOEAnalyzer
-from database.db_connector import MongoDBConnector
-
-from pprint import pprint
 
 # os.chdir("..")
 app = Flask(__name__)
@@ -20,8 +17,8 @@ def config():
     """Show the road network configuration view."""
 
     # get available networks and simulations
-    root, networks = list_files("../data/networks/")
-    _, simulations = list_files("../data/simulations/")
+    root, networks = list_files("data/networks/")
+    _, simulations = list_files("data/simulations/")
     selection = request.args.get('network')
 
     # get shortest paths and hide_internals parameters
@@ -61,7 +58,6 @@ def config():
 @app.route('/add_edge_group', methods=['POST'])
 def add_edge_group():
     """Add a custom group to the road network model."""
-
     
 
     # check if a model actually exists
@@ -93,7 +89,7 @@ def metrics():
     """Show the resulting metrics view."""
 
     # get analysis parameters and existing simulations
-    root, simulations = list_files("../data/simulations/")
+    root, simulations = list_files("data/simulations/")
     parameters = request.args
     
     # check if model and simulation actually exist

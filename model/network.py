@@ -14,7 +14,6 @@ import re, os
 
 from model.base_components import *
 from model.system_components import *
-from pprint import pprint
 
 
 class RoadNetworkModel():
