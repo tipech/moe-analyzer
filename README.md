@@ -16,7 +16,7 @@ This will start a Python Flask webserver on localhost:5000, which you can access
 
 Some features available are:
  - Interactive map of the road network
- - Automatic generation of possible vehicles paths though the network
+ - Automatic generation of possible vehicle paths though the network
  - Detailed MOE results for every road network edge, every end-to-end path or the entire system
  - Ability to create custom user-specified systems by combining individual network edges
  - Ability to provide custom Passenger Car Equivalent values for vehicle types
@@ -33,7 +33,7 @@ Additional user-specified networks and simulation files can be added to the ui/d
 The algorithm's functionality can be split into 3 steps, network model creation, vehicle data loading and MOE calculation.
 
 ##### Network model construction
-This part is handled the Nework object in model/network.py . The tools NETCONVERT and NETEDIT are part of the SUMO platform and can be used to obtain a road network .xml file, usually by downloading and converting portions of a map from OpenStreetMap. The program creates "base components", i.e. Junction, Edge and Lane objects, as needed. It then arranges them as a directed network structure and then applies graph theory algorithms to identify all possible paths in the system and especially the shortest paths from entrances to exits.
+This part is handled by the Nework object in model/network.py . The tools NETCONVERT and NETEDIT are part of the SUMO platform and can be used to obtain a road network .xml file, usually by downloading and converting portions of a map from OpenStreetMap. The program creates "base components", i.e. Junction, Edge and Lane objects, as needed. It then arranges them as a directed network structure and then applies graph theory algorithms to identify all possible paths in the system and especially the shortest paths from entrances to exits.
 
 ##### Vehicle data loading
 This process is handled by classes in the file analyzer/loaders.py, in a streaming way that would allow for real-time processing of incoming data if that stream was available. Because a generator "loader" object is used, it is very easy to provide different variations of loaders to satisfy different needs, e.g. an XMLloader versus a JSONloader, or a loader that introduces noise into the system for experimenting with robustness.
